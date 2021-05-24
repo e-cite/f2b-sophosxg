@@ -26,9 +26,13 @@ def flush():
   return 0
 
 def ban(ip):
-  print("Block single IP", ip)
-  return 0
+  if isValidIp(ip):
+    print("Block single IP", ip)
+    return 0
+  return 1
 
 def unban(ip):
-  print("Unblock single IP", ip)
-  return 0
+  if isValidIp(ip):
+    print("Unblock single IP", ip)
+    return 0
+  return 1

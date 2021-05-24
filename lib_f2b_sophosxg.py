@@ -36,6 +36,15 @@ def apiCall(url,xmldata):
   except:
     return None
 
+def buildXmlRequestAddIpHostGroup(ipHostGroup):
+  return
+
+def buildXmlRequestAddIpHost(ip,ipHostGroup):
+  return
+
+def buildXmlRequestDelIpHost(ip):
+  return
+
 def start():
   print("Initial setup on f2b start")
   return 0

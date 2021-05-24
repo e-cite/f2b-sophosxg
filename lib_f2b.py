@@ -38,7 +38,7 @@ def check():
   return 0
 
 def flush():
-  print("Flush (clear) all IPS, by shutdown or when stopping the jail")
+  print("Flush (clear) all IPs, by shutdown or when stopping the jail")
   # Get all elements of IpHostGroup
   xmldata = buildXmlRequestStringGetIpHostGroup()
   response = apiCall(config["url"],xmldata)

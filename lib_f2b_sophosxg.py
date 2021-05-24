@@ -129,4 +129,14 @@ def unban(ip):
   if not isValidIp(ip):
     return 1
   print("Unblock single IP", ip)
+
+  # Update IpHost to release any IpHostGroup bindings
+  # Same request as adding an IpHost but without defining an IpHostGroup
+  xmldata = buildXmlRequestAddIpHost(ip,'')
+  response = apiCall(config["url"],xmldata)
+
+  # Finally delete IpHost
+  xmldata = buildXmlRequestDelIpHost(ip)
+  response = apiCall(config["url"],xmldata)
+
   return 0

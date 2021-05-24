@@ -2,12 +2,11 @@ import ipaddress
 
 def isValidIp(ip):
   try:
-      ret = ipaddress.ip_address(ip)
-  except:
-      print("IP address is not valid. Exit.")
-      return 0
-  else:
+    ret = ipaddress.ip_address(ip)
     return 1
+  except:
+    print("IP address is not valid. Exit.")
+    return 0
 
 def start():
   print("Initial setup on f2b start")

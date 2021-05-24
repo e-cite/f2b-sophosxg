@@ -117,3 +117,15 @@ def buildXmlRequestStringGetIpHostGroup():
   name = ET.SubElement(iphostgroup, 'Name')
 
   return ET.tostring(request, encoding="unicode")
+
+def buildXmlRequestStringGetIpHost():
+  request = buildXmlBaseElement()
+  get = ET.SubElement(request, 'Get')
+
+  # Subelements of <Get>
+  iphost = ET.SubElement(get, 'IPHost')
+
+  # Subelements of <IPHost>
+  name = ET.SubElement(iphost, 'Name')
+
+  return ET.tostring(request, encoding="unicode")

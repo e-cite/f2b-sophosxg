@@ -128,6 +128,9 @@ def buildXmlRequestDelIpHost(ip):
 
 def start():
   print("Initial setup on f2b start")
+  print("Ensure IP host group", config["sophos_iphostgroup_name"], "is present")
+  xmldata = buildXmlRequestAddIpHostGroup(config["sophos_iphostgroup_name"])
+  response = apiCall(config["url"],xmldata)
   return 0
 
 def stop():

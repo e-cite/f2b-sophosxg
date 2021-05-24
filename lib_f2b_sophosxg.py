@@ -2,7 +2,7 @@ import ipaddress
 import json
 import requests
 
-def readConfig(file):
+def getConfig(file):
   try:
     with open(file, 'r') as f:
       config = json.load(f)
@@ -11,7 +11,7 @@ def readConfig(file):
     return None
 
 configfile = 'config.json'
-config = readConfig(configfile)
+config = getConfig(configfile)
 
 def isValidIp(ip):
   try:

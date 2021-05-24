@@ -3,8 +3,28 @@ from lib_sophosxg import *
 def start():
   print("Initial setup on f2b start")
   print("Ensure IP host group", config["sophos_iphostgroup_name"], "is present")
-  xmldata = buildXmlRequestStringAddIpHostGroup(config["sophos_iphostgroup_name"])
+
+  # Get all elements of IpHostGroup
+  xmldata = buildXmlRequestStringGetIpHostGroup()
   response = apiCall(config["url"],xmldata)
+
+  # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
+  root = ET.fromstring(response.content)
+
+  found = False
+  for hostgroup in root.findall('IPHostGroup'):
+    if hostgroup.find('Name').text == config["sophos_iphostgroup_name"]:
+      found = True
+
+  # If IP host group already present, do nothing
+  # Otherwise add IP host group
+  if found:
+    print("IP host group", config["sophos_iphostgroup_name"], "already present")
+  else:
+    print("Adding IP host group", config["sophos_iphostgroup_name"])
+    xmldata = buildXmlRequestStringAddIpHostGroup(config["sophos_iphostgroup_name"])
+    response = apiCall(config["url"],xmldata)
+
   return 0
 
 def stop():

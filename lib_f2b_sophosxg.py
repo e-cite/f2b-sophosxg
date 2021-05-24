@@ -1,5 +1,6 @@
 import ipaddress
 import json
+import requests
 
 def isValidIp(ip):
   try:
@@ -14,6 +15,21 @@ def readConfig(file):
     with open(file, 'r') as f:
       config = json.load(f)
     return config
+  except:
+    return None
+
+def apiCall(url,xmldata):
+  requesturl = url + "?reqxml=" + xmldata
+
+  verifySslCertificate = False
+  if verifySslCertificate == False:
+    # Suppress SSL verification warnings
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+  try:
+    response = requests.get(requesturl, verify=verifySslCertificate)
+    return response
   except:
     return None
 

@@ -3,9 +3,11 @@ import ipaddress
 def isValidIp(ip):
   try:
       ret = ipaddress.ip_address(ip)
-      return 0
   except:
-      return 1
+      print("IP address is not valid. Exit.")
+      return 0
+  else:
+    return 1
 
 def start():
   print("Initial setup on f2b start")

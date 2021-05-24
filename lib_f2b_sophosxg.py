@@ -84,7 +84,19 @@ def buildXmlRequestAddIpHost(ip,ipHostGroup):
   return ET.tostring(request, encoding="unicode")
 
 def buildXmlRequestDelIpHost(ip):
-  return
+  request = buildXmlRequestBaseElement()
+  remove = ET.SubElement(request, 'Remove')
+
+  # Subelements of <Remove>
+  iphost = ET.SubElement(remove, 'IPHost')
+
+  # Subelements of <IPHost>
+  name = ET.SubElement(iphost, 'Name')
+
+  # Define values of the elements
+  name.text = config["sophos_iphost_prefix"] + ip
+
+  return ET.tostring(request, encoding="unicode")
 
 def start():
   print("Initial setup on f2b start")

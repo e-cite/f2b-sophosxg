@@ -1,26 +1,6 @@
-import ipaddress
-import json
+from lib_util import *
 import requests
 import xml.etree.ElementTree as ET
-
-def getConfig(file):
-  try:
-    with open(file, 'r') as f:
-      config = json.load(f)
-    return config
-  except:
-    return None
-
-configfile = 'config.json'
-config = getConfig(configfile)
-
-def isValidIp(ip):
-  try:
-    ret = ipaddress.ip_address(ip)
-    return 1
-  except:
-    print("IP address is not valid. Exit.")
-    return 0
 
 def apiCall(url,xmldata):
   requesturl = url + "?reqxml=" + xmldata
@@ -125,51 +105,3 @@ def buildXmlRequestStringDelIpHost(ip):
   name.text = config["sophos_iphost_prefix"] + ip
 
   return ET.tostring(request, encoding="unicode")
-
-def start():
-  print("Initial setup on f2b start")
-  print("Ensure IP host group", config["sophos_iphostgroup_name"], "is present")
-  xmldata = buildXmlRequestStringAddIpHostGroup(config["sophos_iphostgroup_name"])
-  response = apiCall(config["url"],xmldata)
-  return 0
-
-def stop():
-  print("Cleanup on f2b stop")
-  print("Do NOT clean IP host group", config["sophos_iphostgroup_name"],
-    "since this may affect existing firewall rules.")
-  return 0
-
-def check():
-  print("Executed before each ban")
-  return 0
-
-def flush():
-  print("Flush (clear) all IPS, by shutdown or when stopping the jail")
-  return 0
-
-def ban(ip):
-  if not isValidIp(ip):
-    return 1
-  print("Block single IP", ip)
-
-  # Add new IpHost as part of the IpHostGroup
-  xmldata = buildXmlRequestStringAddIpHost(ip,config["sophos_iphostgroup_name"])
-  response = apiCall(config["url"],xmldata)
-
-  return 0
-
-def unban(ip):
-  if not isValidIp(ip):
-    return 1
-  print("Unblock single IP", ip)
-
-  # Update IpHost to release any IpHostGroup bindings
-  # Same request as adding an IpHost but without defining an IpHostGroup
-  xmldata = buildXmlRequestStringAddIpHost(ip,'')
-  response = apiCall(config["url"],xmldata)
-
-  # Finally delete IpHost
-  xmldata = buildXmlRequestStringDelIpHost(ip)
-  response = apiCall(config["url"],xmldata)
-
-  return 0

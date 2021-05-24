@@ -69,6 +69,21 @@ def buildXmlRequestAddIpHostGroup(ipHostGroupName):
 
   return ET.tostring(request, encoding="unicode")
 
+def buildXmlRequestDelIpHostGroup(ipHostGroupName):
+  request = buildXmlRequestBaseElement()
+  remove = ET.SubElement(request, 'Remove')
+
+  # Subelements of <Remove>
+  iphostgroup = ET.SubElement(remove, 'IPHostGroup')
+
+  # Subelements of <IPHostGroup>
+  name = ET.SubElement(iphostgroup, 'Name')
+
+  # Define values of the elements
+  name.text = ipHostGroupName
+
+  return ET.tostring(request, encoding="unicode")
+
 def buildXmlRequestAddIpHost(ip,ipHostGroup):
   request = buildXmlRequestBaseElement()
   set = ET.SubElement(request, 'Set')

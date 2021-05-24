@@ -70,15 +70,16 @@ def buildXmlRequestAddIpHost(ip,ipHostGroup):
   hostgrouplist = ET.SubElement(iphost, 'HostGroupList')
   ipaddress = ET.SubElement(iphost, 'IPAddress')
 
-  # Subelements of <HostGroupList>
-  hostgroup = ET.SubElement(hostgrouplist, 'HostGroup')
-
   # Define values of the elements
   name.text = config["sophos_iphost_prefix"] + ip
   ipfamily.text = 'IPv4'
   hosttype.text = 'IP'
-  hostgroup.text = ipHostGroup
   ipaddress.text = ip
+
+  if ipHostGroup:
+    # Subelements of <HostGroupList> and define its value
+    hostgroup = ET.SubElement(hostgrouplist, 'HostGroup')
+    hostgroup.text = ipHostGroup
 
   return ET.tostring(request, encoding="unicode")
 

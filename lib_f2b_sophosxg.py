@@ -53,7 +53,7 @@ def buildXmlBaseElement():
 
   return request
 
-def buildXmlRequestAddIpHostGroup(ipHostGroupName):
+def buildXmlRequestStringAddIpHostGroup(ipHostGroupName):
   request = buildXmlBaseElement()
   set = ET.SubElement(request, 'Set')
 
@@ -69,7 +69,7 @@ def buildXmlRequestAddIpHostGroup(ipHostGroupName):
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestDelIpHostGroup(ipHostGroupName):
+def buildXmlRequestStringDelIpHostGroup(ipHostGroupName):
   request = buildXmlBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
@@ -84,7 +84,7 @@ def buildXmlRequestDelIpHostGroup(ipHostGroupName):
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestAddIpHost(ip,ipHostGroup):
+def buildXmlRequestStringAddIpHost(ip,ipHostGroup):
   request = buildXmlBaseElement()
   set = ET.SubElement(request, 'Set')
 
@@ -111,7 +111,7 @@ def buildXmlRequestAddIpHost(ip,ipHostGroup):
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestDelIpHost(ip):
+def buildXmlRequestStringDelIpHost(ip):
   request = buildXmlBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
@@ -129,7 +129,7 @@ def buildXmlRequestDelIpHost(ip):
 def start():
   print("Initial setup on f2b start")
   print("Ensure IP host group", config["sophos_iphostgroup_name"], "is present")
-  xmldata = buildXmlRequestAddIpHostGroup(config["sophos_iphostgroup_name"])
+  xmldata = buildXmlRequestStringAddIpHostGroup(config["sophos_iphostgroup_name"])
   response = apiCall(config["url"],xmldata)
   return 0
 
@@ -153,7 +153,7 @@ def ban(ip):
   print("Block single IP", ip)
 
   # Add new IpHost as part of the IpHostGroup
-  xmldata = buildXmlRequestAddIpHost(ip,config["sophos_iphostgroup_name"])
+  xmldata = buildXmlRequestStringAddIpHost(ip,config["sophos_iphostgroup_name"])
   response = apiCall(config["url"],xmldata)
 
   return 0
@@ -165,11 +165,11 @@ def unban(ip):
 
   # Update IpHost to release any IpHostGroup bindings
   # Same request as adding an IpHost but without defining an IpHostGroup
-  xmldata = buildXmlRequestAddIpHost(ip,'')
+  xmldata = buildXmlRequestStringAddIpHost(ip,'')
   response = apiCall(config["url"],xmldata)
 
   # Finally delete IpHost
-  xmldata = buildXmlRequestDelIpHost(ip)
+  xmldata = buildXmlRequestStringDelIpHost(ip)
   response = apiCall(config["url"],xmldata)
 
   return 0

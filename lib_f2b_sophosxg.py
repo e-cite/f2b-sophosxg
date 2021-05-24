@@ -2,14 +2,6 @@ import ipaddress
 import json
 import requests
 
-def isValidIp(ip):
-  try:
-    ret = ipaddress.ip_address(ip)
-    return 1
-  except:
-    print("IP address is not valid. Exit.")
-    return 0
-
 def readConfig(file):
   try:
     with open(file, 'r') as f:
@@ -20,6 +12,14 @@ def readConfig(file):
 
 configfile = 'config.json'
 config = readConfig(configfile)
+
+def isValidIp(ip):
+  try:
+    ret = ipaddress.ip_address(ip)
+    return 1
+  except:
+    print("IP address is not valid. Exit.")
+    return 0
 
 def apiCall(url,xmldata):
   requesturl = url + "?reqxml=" + xmldata

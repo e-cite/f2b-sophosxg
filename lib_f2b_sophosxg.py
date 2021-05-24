@@ -1,4 +1,5 @@
 import ipaddress
+import json
 
 def isValidIp(ip):
   try:
@@ -7,6 +8,14 @@ def isValidIp(ip):
   except:
     print("IP address is not valid. Exit.")
     return 0
+
+def readConfig(file):
+  try:
+    with open(file, 'r') as f:
+      config = json.load(f)
+    return config
+  except:
+    return None
 
 def start():
   print("Initial setup on f2b start")

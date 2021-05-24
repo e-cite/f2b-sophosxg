@@ -53,8 +53,21 @@ def buildXmlRequestBaseElement():
 
   return request
 
-def buildXmlRequestAddIpHostGroup(ipHostGroup):
-  return
+def buildXmlRequestAddIpHostGroup(ipHostGroupName):
+  request = buildXmlRequestBaseElement()
+  set = ET.SubElement(request, 'Set')
+
+  # Subelements of <Set>
+  iphostgroup = ET.SubElement(set, 'IPHostGroup')
+
+  # Subelements of <IPHostGroup>
+  name = ET.SubElement(iphostgroup, 'Name')
+  ipfamily = ET.SubElement(iphostgroup, 'IPFamily')
+
+  # Define values of the elements
+  name.text = ipHostGroupName
+
+  return ET.tostring(request, encoding="unicode")
 
 def buildXmlRequestAddIpHost(ip,ipHostGroup):
   request = buildXmlRequestBaseElement()

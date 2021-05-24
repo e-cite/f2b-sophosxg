@@ -9,8 +9,9 @@ def readConfig(file):
   except:
     return None
 
-configfile = 'config.json'
-config = readConfig(configfile)
+def getConfig(param):
+  config = readConfig('config.json')
+  return config[param]
 
 def isValidIp(ip):
   try:

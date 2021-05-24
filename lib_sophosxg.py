@@ -28,8 +28,8 @@ def buildXmlBaseElement():
   password = ET.SubElement(login, 'Password')
 
   # Define values of the elements
-  username.text = config["user"]
-  password.text = config["pass"]
+  username.text = getConfig('user')
+  password.text = getConfig('pass')
 
   return request
 

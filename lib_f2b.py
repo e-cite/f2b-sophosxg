@@ -2,34 +2,34 @@ from lib_sophosxg import *
 
 def start():
   print("Initial setup on f2b start")
-  print("Ensure IP host group", config["sophos_iphostgroup_name"], "is present")
+  print("Ensure IP host group", getConfig('sophos_iphostgroup_name'), "is present")
 
   # Get all elements of IpHostGroup
   xmldata = buildXmlRequestStringGetIpHostGroup()
-  response = apiCall(config["url"],xmldata)
+  response = apiCall(getConfig('url'),xmldata)
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
   root = ET.fromstring(response.content)
 
   found = False
   for hostgroup in root.findall('IPHostGroup'):
-    if hostgroup.find('Name').text == config["sophos_iphostgroup_name"]:
+    if hostgroup.find('Name').text == getConfig('sophos_iphostgroup_name'):
       found = True
 
   # If IP host group already present, do nothing
   # Otherwise add IP host group
   if found:
-    print("IP host group", config["sophos_iphostgroup_name"], "already present")
+    print("IP host group", getConfig('sophos_iphostgroup_name'), "already present")
   else:
-    print("Adding IP host group", config["sophos_iphostgroup_name"])
-    xmldata = buildXmlRequestStringAddIpHostGroup(config["sophos_iphostgroup_name"])
-    response = apiCall(config["url"],xmldata)
+    print("Adding IP host group", getConfig('sophos_iphostgroup_name'))
+    xmldata = buildXmlRequestStringAddIpHostGroup(getConfig('sophos_iphostgroup_name'))
+    response = apiCall(getConfig('url'),xmldata)
 
   return 0
 
 def stop():
   print("Cleanup on f2b stop")
-  print("Do NOT clean IP host group", config["sophos_iphostgroup_name"],
+  print("Do NOT clean IP host group", getConfig('sophos_iphostgroup_name'),
     "since this may affect existing firewall rules.")
   return 0
 
@@ -41,21 +41,21 @@ def flush():
   print("Flush (clear) all IPs, by shutdown or when stopping the jail")
   # Get all elements of IpHostGroup
   xmldata = buildXmlRequestStringGetIpHostGroup()
-  response = apiCall(config["url"],xmldata)
+  response = apiCall(getConfig('url'),xmldata)
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
   root = ET.fromstring(response.content)
 
   hostNames = list()
   for hostgroup in root.findall('IPHostGroup'):
-    if hostgroup.find('Name').text == config["sophos_iphostgroup_name"]:
+    if hostgroup.find('Name').text == getConfig('sophos_iphostgroup_name'):
       hostlist = hostgroup.find('HostList')
       for host in hostlist.findall('Host'):
         hostNames.append(host.text)
 
   # Get all elements of IpHost
   xmldata = buildXmlRequestStringGetIpHost()
-  response = apiCall(config["url"],xmldata)
+  response = apiCall(getConfig('url'),xmldata)
 
   # Parse response, search 'IPHost' elements for names in hostNames
   root = ET.fromstring(response.content)
@@ -77,9 +77,9 @@ def ban(ip):
   print("Block single IP", ip)
 
   # Add new IpHost as part of the IpHostGroup
-  IpHostName = config["sophos_iphost_prefix"] + ip
-  xmldata = buildXmlRequestStringAddIpHost(IpHostName,ip,config["sophos_iphostgroup_name"])
-  response = apiCall(config["url"],xmldata)
+  IpHostName = getConfig('sophos_iphost_prefix') + ip
+  xmldata = buildXmlRequestStringAddIpHost(IpHostName,ip,getConfig('sophos_iphostgroup_name'))
+  response = apiCall(getConfig('url'),xmldata)
 
   return 0
 
@@ -90,12 +90,12 @@ def unban(ip):
 
   # Update IpHost to release any IpHostGroup bindings
   # Same request as adding an IpHost but without defining an IpHostGroup
-  IpHostName = config["sophos_iphost_prefix"] + ip
+  IpHostName = getConfig('sophos_iphost_prefix') + ip
   xmldata = buildXmlRequestStringAddIpHost(IpHostName,ip,'')
-  response = apiCall(config["url"],xmldata)
+  response = apiCall(getConfig('url'),xmldata)
 
   # Finally delete IpHost
   xmldata = buildXmlRequestStringDelIpHost(IpHostName)
-  response = apiCall(config["url"],xmldata)
+  response = apiCall(getConfig('url'),xmldata)
 
   return 0

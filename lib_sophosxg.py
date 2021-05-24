@@ -105,3 +105,15 @@ def buildXmlRequestStringDelIpHost(ip):
   name.text = config["sophos_iphost_prefix"] + ip
 
   return ET.tostring(request, encoding="unicode")
+
+def buildXmlRequestStringGetIpHostGroup():
+  request = buildXmlBaseElement()
+  get = ET.SubElement(request, 'Get')
+
+  # Subelements of <Get>
+  iphostgroup = ET.SubElement(get, 'IPHostGroup')
+
+  # Subelements of <IPHostGroup>
+  name = ET.SubElement(iphostgroup, 'Name')
+
+  return ET.tostring(request, encoding="unicode")

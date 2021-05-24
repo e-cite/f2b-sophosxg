@@ -19,6 +19,19 @@ def check():
 
 def flush():
   print("Flush (clear) all IPS, by shutdown or when stopping the jail")
+  # Get all elements of IpHostGroup
+  xmldata = buildXmlRequestStringGetIpHostGroup()
+  response = apiCall(config["url"],xmldata)
+
+  # Parse response, search 'Host' elements and add them to the list 'hosts'
+  root = ET.fromstring(response.content)
+  hosts = list()
+  for host in root.iter('Host'):
+    print("Found IP host:", host.text)
+    hosts.append(host.text)
+
+  # TODO: Call unban(name) per each list-element of hosts
+
   return 0
 
 def ban(ip):

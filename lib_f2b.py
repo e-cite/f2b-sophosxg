@@ -6,7 +6,7 @@ def start():
 
   # Get all elements of IpHostGroup
   xmldata = buildXmlRequestStringGetIpHostGroup()
-  response = apiCall(getConfig('url'),xmldata)
+  response = apiCall(xmldata)
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
   root = ET.fromstring(response.content)
@@ -23,7 +23,7 @@ def start():
   else:
     print("Adding IP host group", getConfig('sophos_iphostgroup_name'))
     xmldata = buildXmlRequestStringAddIpHostGroup(getConfig('sophos_iphostgroup_name'))
-    response = apiCall(getConfig('url'),xmldata)
+    response = apiCall(xmldata)
 
   return 0
 
@@ -41,7 +41,7 @@ def flush():
   print("Flush (clear) all IPs, by shutdown or when stopping the jail")
   # Get all elements of IpHostGroup
   xmldata = buildXmlRequestStringGetIpHostGroup()
-  response = apiCall(getConfig('url'),xmldata)
+  response = apiCall(xmldata)
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
   root = ET.fromstring(response.content)
@@ -55,7 +55,7 @@ def flush():
 
   # Get all elements of IpHost
   xmldata = buildXmlRequestStringGetIpHost()
-  response = apiCall(getConfig('url'),xmldata)
+  response = apiCall(xmldata)
 
   # Parse response, search 'IPHost' elements for names in hostNames
   root = ET.fromstring(response.content)
@@ -79,7 +79,7 @@ def ban(ip):
   # Add new IpHost as part of the IpHostGroup
   IpHostName = getConfig('sophos_iphost_prefix') + ip
   xmldata = buildXmlRequestStringAddIpHost(IpHostName,ip,getConfig('sophos_iphostgroup_name'))
-  response = apiCall(getConfig('url'),xmldata)
+  response = apiCall(xmldata)
 
   return 0
 
@@ -92,10 +92,10 @@ def unban(ip):
   # Same request as adding an IpHost but without defining an IpHostGroup
   IpHostName = getConfig('sophos_iphost_prefix') + ip
   xmldata = buildXmlRequestStringAddIpHost(IpHostName,ip,'')
-  response = apiCall(getConfig('url'),xmldata)
+  response = apiCall(xmldata)
 
   # Finally delete IpHost
   xmldata = buildXmlRequestStringDelIpHost(IpHostName)
-  response = apiCall(getConfig('url'),xmldata)
+  response = apiCall(xmldata)
 
   return 0

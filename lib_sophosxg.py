@@ -2,8 +2,8 @@ from lib_util import *
 import requests
 import xml.etree.ElementTree as ET
 
-def apiCall(url,xmldata):
-  requesturl = url + "?reqxml=" + xmldata
+def apiCall(xmldata):
+  requesturl = getConfig('url') + "?reqxml=" + xmldata
 
   verifySslCertificate = False
   if verifySslCertificate == False:

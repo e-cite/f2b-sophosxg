@@ -135,6 +135,8 @@ def start():
 
 def stop():
   print("Cleanup on f2b stop")
+  print("Do NOT clean IP host group", config["sophos_iphostgroup_name"],
+    "since this may affect existing firewall rules.")
   return 0
 
 def check():

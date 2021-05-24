@@ -43,14 +43,31 @@ def flush():
   xmldata = buildXmlRequestStringGetIpHostGroup()
   response = apiCall(config["url"],xmldata)
 
-  # Parse response, search 'Host' elements and add them to the list 'hosts'
+  # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
   root = ET.fromstring(response.content)
-  hosts = list()
-  for host in root.iter('Host'):
-    print("Found IP host:", host.text)
-    hosts.append(host.text)
 
-  # TODO: Call unban(name) per each list-element of hosts
+  hostNames = list()
+  for hostgroup in root.findall('IPHostGroup'):
+    if hostgroup.find('Name').text == config["sophos_iphostgroup_name"]:
+      hostlist = hostgroup.find('HostList')
+      for host in hostlist.findall('Host'):
+        hostNames.append(host.text)
+
+  # Get all elements of IpHost
+  xmldata = buildXmlRequestStringGetIpHost()
+  response = apiCall(config["url"],xmldata)
+
+  # Parse response, search 'IPHost' elements for names in hostNames
+  root = ET.fromstring(response.content)
+
+  ips = list()
+  for host in root.findall('IPHost'):
+    if host.find('Name').text in hostNames:
+      ips.append(host.find('IPAddress').text)
+
+  # Finally unban each ip
+  for ip in ips:
+    unban(ip)
 
   return 0
 

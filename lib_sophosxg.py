@@ -17,7 +17,7 @@ def apiCall(xmldata):
   except:
     return None
 
-def buildXmlBaseElement():
+def getXmlBaseElement():
   request = ET.Element('Request')
 
   # Subelements of <Request>
@@ -33,8 +33,8 @@ def buildXmlBaseElement():
 
   return request
 
-def buildXmlRequestStringAddIpHostGroup(ipHostGroupName):
-  request = buildXmlBaseElement()
+def xml_addIpHostGroup(ipHostGroupName):
+  request = getXmlBaseElement()
   set = ET.SubElement(request, 'Set')
 
   # Subelements of <Set>
@@ -49,8 +49,8 @@ def buildXmlRequestStringAddIpHostGroup(ipHostGroupName):
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestStringDelIpHostGroup(ipHostGroupName):
-  request = buildXmlBaseElement()
+def xml_delIpHostGroup(ipHostGroupName):
+  request = getXmlBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
   # Subelements of <Remove>
@@ -64,8 +64,8 @@ def buildXmlRequestStringDelIpHostGroup(ipHostGroupName):
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestStringAddIpHost(ipHostName,ip,ipHostGroup):
-  request = buildXmlBaseElement()
+def xml_addIpHost(ipHostName,ip,ipHostGroup):
+  request = getXmlBaseElement()
   set = ET.SubElement(request, 'Set')
 
   # Subelements of <Set>
@@ -91,8 +91,8 @@ def buildXmlRequestStringAddIpHost(ipHostName,ip,ipHostGroup):
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestStringDelIpHost(ipHostName):
-  request = buildXmlBaseElement()
+def xml_delIpHost(ipHostName):
+  request = getXmlBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
   # Subelements of <Remove>
@@ -106,8 +106,8 @@ def buildXmlRequestStringDelIpHost(ipHostName):
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestStringGetIpHostGroup():
-  request = buildXmlBaseElement()
+def xml_getIpHostGroup():
+  request = getXmlBaseElement()
   get = ET.SubElement(request, 'Get')
 
   # Subelements of <Get>
@@ -118,8 +118,8 @@ def buildXmlRequestStringGetIpHostGroup():
 
   return ET.tostring(request, encoding="unicode")
 
-def buildXmlRequestStringGetIpHost():
-  request = buildXmlBaseElement()
+def xml_getIpHost():
+  request = getXmlBaseElement()
   get = ET.SubElement(request, 'Get')
 
   # Subelements of <Get>

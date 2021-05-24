@@ -5,7 +5,7 @@ def start():
   print("Ensure IP host group", getConfig('sophos_iphostgroup_name'), "is present")
 
   # Get all elements of IpHostGroup
-  xmldata = buildXmlRequestStringGetIpHostGroup()
+  xmldata = xml_getIpHostGroup()
   response = apiCall(xmldata)
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
@@ -22,7 +22,7 @@ def start():
     print("IP host group", getConfig('sophos_iphostgroup_name'), "already present")
   else:
     print("Adding IP host group", getConfig('sophos_iphostgroup_name'))
-    xmldata = buildXmlRequestStringAddIpHostGroup(getConfig('sophos_iphostgroup_name'))
+    xmldata = xml_addIpHostGroup(getConfig('sophos_iphostgroup_name'))
     response = apiCall(xmldata)
 
   return 0
@@ -40,7 +40,7 @@ def check():
 def flush():
   print("Flush (clear) all IPs, by shutdown or when stopping the jail")
   # Get all elements of IpHostGroup
-  xmldata = buildXmlRequestStringGetIpHostGroup()
+  xmldata = xml_getIpHostGroup()
   response = apiCall(xmldata)
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
@@ -54,7 +54,7 @@ def flush():
         hostNames.append(host.text)
 
   # Get all elements of IpHost
-  xmldata = buildXmlRequestStringGetIpHost()
+  xmldata = xml_getIpHost()
   response = apiCall(xmldata)
 
   # Parse response, search 'IPHost' elements for names in hostNames
@@ -78,7 +78,7 @@ def ban(ip):
 
   # Add new IpHost as part of the IpHostGroup
   ipHostName = getConfig('sophos_iphost_prefix') + ip
-  xmldata = buildXmlRequestStringAddIpHost(ipHostName,ip,getConfig('sophos_iphostgroup_name'))
+  xmldata = xml_addIpHost(ipHostName,ip,getConfig('sophos_iphostgroup_name'))
   response = apiCall(xmldata)
 
   return 0
@@ -91,11 +91,11 @@ def unban(ip):
   # Update IpHost to release any IpHostGroup bindings
   # Same request as adding an IpHost but without defining an IpHostGroup
   ipHostName = getConfig('sophos_iphost_prefix') + ip
-  xmldata = buildXmlRequestStringAddIpHost(ipHostName,ip,'')
+  xmldata = xml_addIpHost(ipHostName,ip,'')
   response = apiCall(xmldata)
 
   # Finally delete IpHost
-  xmldata = buildXmlRequestStringDelIpHost(ipHostName)
+  xmldata = xml_delIpHost(ipHostName)
   response = apiCall(xmldata)
 
   return 0

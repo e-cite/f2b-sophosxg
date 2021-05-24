@@ -37,7 +37,7 @@ def apiCall(url,xmldata):
   except:
     return None
 
-def buildXmlRequestBaseElement():
+def buildXmlBaseElement():
   request = ET.Element('Request')
 
   # Subelements of <Request>
@@ -54,7 +54,7 @@ def buildXmlRequestBaseElement():
   return request
 
 def buildXmlRequestAddIpHostGroup(ipHostGroupName):
-  request = buildXmlRequestBaseElement()
+  request = buildXmlBaseElement()
   set = ET.SubElement(request, 'Set')
 
   # Subelements of <Set>
@@ -70,7 +70,7 @@ def buildXmlRequestAddIpHostGroup(ipHostGroupName):
   return ET.tostring(request, encoding="unicode")
 
 def buildXmlRequestDelIpHostGroup(ipHostGroupName):
-  request = buildXmlRequestBaseElement()
+  request = buildXmlBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
   # Subelements of <Remove>
@@ -85,7 +85,7 @@ def buildXmlRequestDelIpHostGroup(ipHostGroupName):
   return ET.tostring(request, encoding="unicode")
 
 def buildXmlRequestAddIpHost(ip,ipHostGroup):
-  request = buildXmlRequestBaseElement()
+  request = buildXmlBaseElement()
   set = ET.SubElement(request, 'Set')
 
   # Subelements of <Set>
@@ -112,7 +112,7 @@ def buildXmlRequestAddIpHost(ip,ipHostGroup):
   return ET.tostring(request, encoding="unicode")
 
 def buildXmlRequestDelIpHost(ip):
-  request = buildXmlRequestBaseElement()
+  request = buildXmlBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
   # Subelements of <Remove>

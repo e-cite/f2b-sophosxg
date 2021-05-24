@@ -57,7 +57,30 @@ def buildXmlRequestAddIpHostGroup(ipHostGroup):
   return
 
 def buildXmlRequestAddIpHost(ip,ipHostGroup):
-  return
+  request = buildXmlRequestBaseElement()
+  set = ET.SubElement(request, 'Set')
+
+  # Subelements of <Set>
+  iphost = ET.SubElement(set, 'IPHost')
+
+  # Subelements of <IPHost>
+  name = ET.SubElement(iphost, 'Name')
+  ipfamily = ET.SubElement(iphost, 'IPFamily')
+  hosttype = ET.SubElement(iphost, 'HostType')
+  hostgrouplist = ET.SubElement(iphost, 'HostGroupList')
+  ipaddress = ET.SubElement(iphost, 'IPAddress')
+
+  # Subelements of <HostGroupList>
+  hostgroup = ET.SubElement(hostgrouplist, 'HostGroup')
+
+  # Define values of the elements
+  name.text = config["sophos_iphost_prefix"] + ip
+  ipfamily.text = 'IPv4'
+  hosttype.text = 'IP'
+  hostgroup.text = ipHostGroup
+  ipaddress.text = ip
+
+  return ET.tostring(request, encoding="unicode")
 
 def buildXmlRequestDelIpHost(ip):
   return

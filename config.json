@@ -1,0 +1,7 @@
+{
+  "url": "https://<IP>:4444/webconsole/APIController",
+  "user": "apiuser",
+  "pass": "password",
+  "sophos_iphost_prefix": "f2b_",
+  "sophos_iphostgroup_name": "f2b_blockings"
+}

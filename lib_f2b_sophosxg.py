@@ -106,6 +106,11 @@ def ban(ip):
   if not isValidIp(ip):
     return 1
   print("Block single IP", ip)
+
+  # Add new IpHost as part of the IpHostGroup
+  xmldata = buildXmlRequestAddIpHost(ip,config["sophos_iphostgroup_name"])
+  response = apiCall(config["url"],xmldata)
+
   return 0
 
 def unban(ip):

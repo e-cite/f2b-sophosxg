@@ -40,7 +40,8 @@ def ban(ip):
   print("Block single IP", ip)
 
   # Add new IpHost as part of the IpHostGroup
-  xmldata = buildXmlRequestStringAddIpHost(ip,config["sophos_iphostgroup_name"])
+  IpHostName = config["sophos_iphost_prefix"] + ip
+  xmldata = buildXmlRequestStringAddIpHost(IpHostName,ip,config["sophos_iphostgroup_name"])
   response = apiCall(config["url"],xmldata)
 
   return 0
@@ -52,11 +53,12 @@ def unban(ip):
 
   # Update IpHost to release any IpHostGroup bindings
   # Same request as adding an IpHost but without defining an IpHostGroup
-  xmldata = buildXmlRequestStringAddIpHost(ip,'')
+  IpHostName = config["sophos_iphost_prefix"] + ip
+  xmldata = buildXmlRequestStringAddIpHost(IpHostName,ip,'')
   response = apiCall(config["url"],xmldata)
 
   # Finally delete IpHost
-  xmldata = buildXmlRequestStringDelIpHost(ip)
+  xmldata = buildXmlRequestStringDelIpHost(IpHostName)
   response = apiCall(config["url"],xmldata)
 
   return 0

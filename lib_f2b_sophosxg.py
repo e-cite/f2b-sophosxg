@@ -18,6 +18,9 @@ def readConfig(file):
   except:
     return None
 
+configfile = 'config.json'
+config = readConfig(configfile)
+
 def apiCall(url,xmldata):
   requesturl = url + "?reqxml=" + xmldata
 

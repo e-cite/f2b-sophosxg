@@ -1,6 +1,7 @@
 import ipaddress
 import json
 import requests
+import xml.etree.ElementTree as ET
 
 def getConfig(file):
   try:
@@ -35,6 +36,22 @@ def apiCall(url,xmldata):
     return response
   except:
     return None
+
+def buildXmlRequestBaseElement():
+  request = ET.Element('Request')
+
+  # Subelements of <Request>
+  login = ET.SubElement(request, 'Login')
+
+  # Subelements of <Login>
+  username = ET.SubElement(login, 'Username')
+  password = ET.SubElement(login, 'Password')
+
+  # Define values of the elements
+  username.text = config["user"]
+  password.text = config["pass"]
+
+  return request
 
 def buildXmlRequestAddIpHostGroup(ipHostGroup):
   return

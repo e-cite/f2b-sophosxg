@@ -17,6 +17,12 @@ def apiCall(xmldata):
   except:
     return None
 
+def xml_getRootElement():
+  # Create root element <Request>
+  elem_root = ET.Element('Request')
+
+  return elem_root
+
 def xml_addLoginElement(elem_root):
   # Create <Login> as subelement of <Request>
   elem_login = ET.SubElement(elem_root, 'Login')
@@ -36,12 +42,6 @@ def xml_addMethodElement(elem_root,method):
   elem_method = ET.SubElement(elem_root, method)
 
   return elem_method
-
-def xml_getRootElement():
-  # Create root element <Request>
-  elem_root = ET.Element('Request')
-
-  return elem_root
 
 def xml_addEntityElement(elem_method,entity):
   elem_entity = ET.SubElement(elem_method, entity)

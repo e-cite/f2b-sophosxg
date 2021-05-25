@@ -17,7 +17,7 @@ def apiCall(xmldata):
   except:
     return None
 
-def getXmlBaseElement():
+def xml_getBaseElement():
   request = ET.Element('Request')
 
   # Subelements of <Request>
@@ -34,14 +34,14 @@ def getXmlBaseElement():
   return request
 
 def getXmlGetElement(entity):
-  request = getXmlBaseElement()
+  request = xml_getBaseElement()
   get = ET.SubElement(request, 'Get')
   ET.SubElement(get, entity)
 
   return request
 
 def xml_addIpHostGroup(ipHostGroupName):
-  request = getXmlBaseElement()
+  request = xml_getBaseElement()
   set = ET.SubElement(request, 'Set')
 
   # Subelements of <Set>
@@ -57,7 +57,7 @@ def xml_addIpHostGroup(ipHostGroupName):
   return ET.tostring(request, encoding="unicode")
 
 def xml_delIpHostGroup(ipHostGroupName):
-  request = getXmlBaseElement()
+  request = xml_getBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
   # Subelements of <Remove>
@@ -72,7 +72,7 @@ def xml_delIpHostGroup(ipHostGroupName):
   return ET.tostring(request, encoding="unicode")
 
 def xml_addIpHost(ipHostName,ip,ipHostGroup):
-  request = getXmlBaseElement()
+  request = xml_getBaseElement()
   set = ET.SubElement(request, 'Set')
 
   # Subelements of <Set>
@@ -99,7 +99,7 @@ def xml_addIpHost(ipHostName,ip,ipHostGroup):
   return ET.tostring(request, encoding="unicode")
 
 def xml_delIpHost(ipHostName):
-  request = getXmlBaseElement()
+  request = xml_getBaseElement()
   remove = ET.SubElement(request, 'Remove')
 
   # Subelements of <Remove>

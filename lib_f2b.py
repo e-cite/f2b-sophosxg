@@ -56,21 +56,14 @@ def flush():
       else:
         continue
 
-  # Get all elements of IpHost
-  xmldata = xml_getIpHost()
+  # Flush members of 'IPHostGroup', otherwise the members could not be deleted
+  xmldata = xml_addIpHostGroup(getConfig('sophos_iphostgroup_name'))
   response = apiCall(xmldata)
 
-  # Parse response, search 'IPHost' elements for names in hostNames
-  root = ET.fromstring(response.content)
-
-  ips = list()
-  for host in root.findall('IPHost'):
-    if host.find('Name').text in hostNames:
-      ips.append(host.find('IPAddress').text)
-
-  # Finally unban each ip
-  for ip in ips:
-    unban(ip)
+  # Finally delete each hostName found in IPHostGroup
+  for hostName in hostNames:
+    xmldata = xml_delIpHost(hostName)
+    response = apiCall(xmldata)
 
   return 0
 

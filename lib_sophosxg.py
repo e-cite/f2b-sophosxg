@@ -55,7 +55,7 @@ def xml_getBaseElement(entity,method='Get'):
   elem_method = xml_addMethodElement(elem_root,method)
   elem_entity = xml_addEntityElement(elem_method,entity)
 
-  return elem_root, elem_entity,
+  return elem_root, elem_entity
 
 def xml_addIpHostGroup(ipHostGroupName):
   elem_root, elem_entity = xml_getBaseElement('IPHostGroup','Set')

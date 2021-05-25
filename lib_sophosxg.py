@@ -48,12 +48,17 @@ def xml_addEntityElement(elem_method,entity):
 
   return elem_entity
 
-def xml_addIpHostGroup(ipHostGroupName):
+def xml_getBaseElement(entity,method='Get'):
   # Get Base Element
   elem_root = xml_getRootElement()
   elem_login = xml_addLoginElement(elem_root)
-  elem_method = xml_addMethodElement(elem_root,'Set')
-  elem_entity = xml_addEntityElement(elem_method,'IPHostGroup')
+  elem_method = xml_addMethodElement(elem_root,method)
+  elem_entity = xml_addEntityElement(elem_method,entity)
+
+  return elem_root, elem_entity,
+
+def xml_addIpHostGroup(ipHostGroupName):
+  elem_root, elem_entity = xml_getBaseElement('IPHostGroup','Set')
 
   # Add individual elements
   elem_name = ET.SubElement(elem_entity, 'Name')
@@ -64,11 +69,7 @@ def xml_addIpHostGroup(ipHostGroupName):
   return ET.tostring(elem_root, encoding="unicode")
 
 def xml_delIpHostGroup(ipHostGroupName):
-  # Get Base Element
-  elem_root = xml_getRootElement()
-  elem_login = xml_addLoginElement(elem_root)
-  elem_method = xml_addMethodElement(elem_root,'Remove')
-  elem_entity = xml_addEntityElement(elem_method,'IPHostGroup')
+  elem_root, elem_entity = xml_getBaseElement('IPHostGroup','Remove')
 
   # Add individual elements
   elem_name = ET.SubElement(elem_entity, 'Name')
@@ -77,11 +78,7 @@ def xml_delIpHostGroup(ipHostGroupName):
   return ET.tostring(elem_root, encoding="unicode")
 
 def xml_addIpHost(ipHostName,ip,ipHostGroupName):
-  # Get Base Element
-  elem_root = xml_getRootElement()
-  elem_login = xml_addLoginElement(elem_root)
-  elem_method = xml_addMethodElement(elem_root,'Set')
-  elem_entity = xml_addEntityElement(elem_method,'IPHost')
+  elem_root, elem_entity = xml_getBaseElement('IPHost','Set')
 
   # Add individual elements
   elem_name = ET.SubElement(elem_entity, 'Name')
@@ -101,11 +98,7 @@ def xml_addIpHost(ipHostName,ip,ipHostGroupName):
   return ET.tostring(elem_root, encoding="unicode")
 
 def xml_delIpHost(ipHostName):
-  # Get Base Element
-  elem_root = xml_getRootElement()
-  elem_login = xml_addLoginElement(elem_root)
-  elem_method = xml_addMethodElement(elem_root,'Remove')
-  elem_entity = xml_addEntityElement(elem_method,'IPHost')
+  elem_root, elem_entity = xml_getBaseElement('IPHost','Remove')
 
   # Add individual elements
   elem_name = ET.SubElement(elem_entity, 'Name')
@@ -114,17 +107,11 @@ def xml_delIpHost(ipHostName):
   return ET.tostring(elem_root, encoding="unicode")
 
 def xml_getIpHostGroup():
-  elem_root = xml_getRootElement()
-  elem_login = xml_addLoginElement(elem_root)
-  elem_method = xml_addMethodElement(elem_root,'Get')
-  elem_entity = xml_addEntityElement(elem_method,'IPHostGroup')
+  elem_root, elem_entity = xml_getBaseElement('IPHostGroup')
 
   return ET.tostring(elem_root, encoding="unicode")
 
 def xml_getIpHost():
-  elem_root = xml_getRootElement()
-  elem_login = xml_addLoginElement(elem_root)
-  elem_method = xml_addMethodElement(elem_root,'Get')
-  elem_entity = xml_addEntityElement(elem_method,'IPHost')
+  elem_root, elem_entity = xml_getBaseElement('IPHost')
 
   return ET.tostring(elem_root, encoding="unicode")

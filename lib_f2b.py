@@ -50,8 +50,11 @@ def flush():
   for hostgroup in root.findall('IPHostGroup'):
     if hostgroup.find('Name').text == getConfig('sophos_iphostgroup_name'):
       hostlist = hostgroup.find('HostList')
-      for host in hostlist.findall('Host'):
-        hostNames.append(host.text)
+      if hostlist:
+        for host in hostlist.findall('Host'):
+          hostNames.append(host.text)
+      else:
+        continue
 
   # Get all elements of IpHost
   xmldata = xml_getIpHost()

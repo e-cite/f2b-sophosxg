@@ -1,4 +1,15 @@
-from lib_sophosxg import *
+import xml.etree.ElementTree as ET
+from f2bsophosxg.libutil import (
+  getConfig,
+  isValidIp
+)
+from f2bsophosxg.libsophosxg import (
+  apiCall,
+  xml_addIpHostGroup,
+  xml_addIpHost,
+  xml_delIpHost,
+  xml_getIpHostGroup
+)
 
 # Function called once at the start of Fail2Ban.
 def start():

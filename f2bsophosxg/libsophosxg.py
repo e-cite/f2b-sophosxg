@@ -1,4 +1,4 @@
-from lib_util import *
+from f2bsophosxg.libutil import getConfig
 import requests
 import xml.etree.ElementTree as ET
 

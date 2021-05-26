@@ -3,14 +3,11 @@ import json
 
 # Open and read the config file
 # Arguments: Filename
-# Returns: config-dict or None on errors
+# Returns: config-dict
 def readConfig(file):
-  try:
-    with open(file, 'r') as f:
-      config = json.load(f)
-    return config
-  except:
-    return None
+  with open(file, 'r') as f:
+    config = json.load(f)
+  return config
 
 # Getter function to get config parameters
 # Arguments: Requested parameter
@@ -26,6 +23,6 @@ def isValidIp(ip):
   try:
     ret = ipaddress.ip_address(ip)
     return 1
-  except:
-    print("IP address is not valid. Exit.")
+  except ValueError:
+    print("IP address is not valid.")
     return 0

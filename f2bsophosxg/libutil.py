@@ -14,15 +14,16 @@ def readConfig(file):
 # Returns: Value of requested parameter
 def getConfig(param):
   config = readConfig('config.json')
-  return config[param]
+  value = config[param]
+  return value
 
 # Checker function to proof the validity of an IP address
 # Arguments: IP address to be checked
-# Returns: 1 on valid, 0 on invalid
+# Returns: True on valid, False on invalid
 def isValidIp(ip):
   try:
     ret = ipaddress.ip_address(ip)
-    return 1
+    return True
   except ValueError:
     print("IP address is not valid.")
-    return 0
+    return False

@@ -2,9 +2,20 @@ from f2bsophosxg.libutil import getConfig
 import requests
 import xml.etree.ElementTree as ET
 
+# Parse the Sophos API response for login status message text
+# Arguments: API response
+# Returns: 0 on success, on failure raise an 'ConnectionRefusedError' exception
+def apiResponse_loginStatus(response):
+  root = ET.fromstring(response.content)
+  login = root.find('Login')
+  loginStatusMsg =  login.find('status').text
+  if loginStatusMsg != 'Authentication Successful':
+    raise ConnectionRefusedError('Sophos API login error: ' + loginStatusMsg)
+  return 0
+
 # Execute a single API call by sending provided xmldata
 # Arguments: xmldata for request
-# Returns: None on errors
+# Returns: Response
 def apiCall(xmldata):
   requesturl = getConfig('url') + "?reqxml=" + xmldata
 
@@ -14,11 +25,9 @@ def apiCall(xmldata):
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-  try:
-    response = requests.get(requesturl, verify=verifySslCertificate)
-    return response
-  except:
-    return None
+  response = requests.get(requesturl, verify=verifySslCertificate)
+  apiResponse_loginStatus(response)
+  return response
 
 # Creates an XML root element <Request>
 # Returns: Element

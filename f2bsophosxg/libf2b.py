@@ -97,8 +97,7 @@ def flush():
 
 # Function called when banning an IP.
 def ban(ip):
-  if not isValidIp(ip):
-    return 1
+  if not isValidIp(ip): return 1
   print("Ban: Banning single IP", ip)
 
   # Add new IpHost as part of the IpHostGroup
@@ -111,8 +110,7 @@ def ban(ip):
 
 # Function called when unbanning an IP.
 def unban(ip):
-  if not isValidIp(ip):
-    return 1
+  if not isValidIp(ip): return 1
   print("Unban: Unbanning single IP", ip)
 
   # Update IpHost to release any IpHostGroup bindings

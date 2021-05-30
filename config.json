@@ -1,5 +1,6 @@
 {
   "url": "https://<IP>:4444/webconsole/APIController",
+  "verifySslCertificate": 1,
   "user": "apiuser",
   "pass": "password",
   "sophos_iphost_prefix": "f2b_",

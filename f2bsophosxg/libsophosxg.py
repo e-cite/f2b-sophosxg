@@ -30,13 +30,13 @@ def xml_getRespOperationStatus(responseContent):
   return (None, None)
 
 # Execute a single API call by sending provided xmldata
-# Arguments: xmldata for request
-# Returns: response on success, exceptions on failure:
-#   ConnectionRefusedError, ConnectionError
-def apiCall(xmldata):
-  requesturl = getConfig('url') + "?reqxml=" + xmldata
+# Arguments: xmldata for request,
+#   url of Sophos API Controller,
+#   verifySslCertificate default true
+# Returns: response on success, exceptions on failure
+def apiCall(xmldata, url, verifySslCertificate=True):
+  requesturl = url + "?reqxml=" + xmldata
 
-  verifySslCertificate = False
   if verifySslCertificate == False:
     # Suppress SSL verification warnings
     import urllib3
@@ -44,23 +44,6 @@ def apiCall(xmldata):
 
   response = requests.get(requesturl, verify=verifySslCertificate)
 
-  # Sophos API response: Handle login status
-  loginStatusMsg = xml_getRespLoginStatus(response.content)
-  if loginStatusMsg != 'Authentication Successful':
-    raise ConnectionRefusedError('Sophos API login error: ' + loginStatusMsg)
-
-  # Sophos API response: Handle operation status (if any operation done)
-  statusCode, statusText = xml_getRespOperationStatus(response.content)
-  # Do error handling only when statusCode and statusText are available
-  if statusCode != None and statusText != None:
-    # See: https://docs.sophos.com/nsg/sophos-firewall/18.0/API/index.html
-    # Status 200: Configuration applied successfully.
-    # Status 202: Ip Host / IP Host Group "<DynamicValue>" has been renamed to
-    #   "<DynamicValue>" and updated successfully
-    if not (statusCode == '200' or statusCode == '202'):
-      raise ConnectionError(
-        'Sophos API error ' + statusCode + ': ' + statusText
-      )
   return response
 
 # Creates an XML root element <Request>

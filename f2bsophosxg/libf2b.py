@@ -18,7 +18,7 @@ def start():
 
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()
-  response = apiCall(xmldata)
+  response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
   root = ET.fromstring(response.content)
@@ -37,7 +37,7 @@ def start():
     print("Start: IP host group", getConfig('sophos_iphostgroup_name'),
     "not available. Adding it.")
     xmldata = xml_addIpHostGroup(getConfig('sophos_iphostgroup_name'))
-    response = apiCall(xmldata)
+    response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   return 0
 
@@ -60,7 +60,7 @@ def flush():
     getConfig('sophos_iphostgroup_name'))
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()
-  response = apiCall(xmldata)
+  response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
   root = ET.fromstring(response.content)
@@ -77,12 +77,12 @@ def flush():
 
   # Flush members of 'IPHostGroup', otherwise the members could not be deleted
   xmldata = xml_addIpHostGroup(getConfig('sophos_iphostgroup_name'))
-  response = apiCall(xmldata)
+  response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   # Finally delete each hostName found in IPHostGroup
   for hostName in hostNames:
     xmldata = xml_delIpHost(hostName)
-    response = apiCall(xmldata)
+    response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   return 0
 
@@ -95,7 +95,7 @@ def ban(ip):
   # Add new IpHost as part of the IpHostGroup
   ipHostName = getConfig('sophos_iphost_prefix') + ip
   xmldata = xml_addIpHost(ipHostName,ip,getConfig('sophos_iphostgroup_name'))
-  response = apiCall(xmldata)
+  response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   return 0
 
@@ -109,10 +109,10 @@ def unban(ip):
   # Same request as adding an IpHost but without defining an IpHostGroup
   ipHostName = getConfig('sophos_iphost_prefix') + ip
   xmldata = xml_addIpHost(ipHostName,ip,'')
-  response = apiCall(xmldata)
+  response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   # Finally delete IpHost
   xmldata = xml_delIpHost(ipHostName)
-  response = apiCall(xmldata)
+  response = apiCall(xmldata,getConfig('url'),getConfig('verifySslCertificate'))
 
   return 0

@@ -29,19 +29,27 @@ def xml_getRespOperationStatus(responseContent):
   # If no XML element is present in response, return tuple (None, None)
   return (None, None)
 
-# Parse the Sophos API response for login status message text
-# Arguments: API response
-# Returns: 0 on success, on failure raise an 'ConnectionRefusedError' exception
-def apiResponse_loginStatus(response):
+# Execute a single API call by sending provided xmldata
+# Arguments: xmldata for request
+# Returns: response on success, exceptions on failure:
+#   ConnectionRefusedError, ConnectionError
+def apiCall(xmldata):
+  requesturl = getConfig('url') + "?reqxml=" + xmldata
+
+  verifySslCertificate = False
+  if verifySslCertificate == False:
+    # Suppress SSL verification warnings
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+  response = requests.get(requesturl, verify=verifySslCertificate)
+
+  # Sophos API response: Handle login status
   loginStatusMsg = xml_getRespLoginStatus(response.content)
   if loginStatusMsg != 'Authentication Successful':
     raise ConnectionRefusedError('Sophos API login error: ' + loginStatusMsg)
-  return 0
 
-# Parse the Sophos API response for status codes of operation, if available
-# Arguments: API response
-# Returns: 0 on success, on failure raise an 'ConnectionError' exception
-def apiResponse_operationStatus(response):
+  # Sophos API response: Handle operation status (if any operation done)
   statusCode, statusText = xml_getRespOperationStatus(response.content)
   # If there is an operationStatusCode and Message, then do error handling
   if statusCode != None and statusText != None:
@@ -53,23 +61,6 @@ def apiResponse_operationStatus(response):
       raise ConnectionError(
         'Sophos API error ' + statusCode + ': ' + statusText
       )
-  return 0
-
-# Execute a single API call by sending provided xmldata
-# Arguments: xmldata for request
-# Returns: Response
-def apiCall(xmldata):
-  requesturl = getConfig('url') + "?reqxml=" + xmldata
-
-  verifySslCertificate = False
-  if verifySslCertificate == False:
-    # Suppress SSL verification warnings
-    import urllib3
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-  response = requests.get(requesturl, verify=verifySslCertificate)
-  apiResponse_loginStatus(response)
-  apiResponse_operationStatus(response)
   return response
 
 # Creates an XML root element <Request>

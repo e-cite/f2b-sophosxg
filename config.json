@@ -3,6 +3,6 @@
   "verifySslCertificate": 1,
   "user": "apiuser",
   "pass": "password",
-  "sophos_iphost_prefix": "f2b_",
-  "sophos_iphostgroup_name": "f2b_blockings"
+  "iphost_prefix": "f2b_",
+  "iphostgroup_name": "f2b_blockings"
 }

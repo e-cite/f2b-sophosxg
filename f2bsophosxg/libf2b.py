@@ -17,7 +17,7 @@ config = readConfig('config.json')
 
 # Function called once at the start of Fail2Ban.
 def start():
-  print("Start: Ensure IP host group", config['sophos_iphostgroup_name'],
+  print("Start: Ensure IP host group", config['iphostgroup_name'],
     "is available.")
 
   # Get all elements of IpHostGroup
@@ -25,23 +25,23 @@ def start():
   response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
-  # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
+  # Parse response, search 'IPHostGroup' elements for "iphostgroup_name"
   root = ET.fromstring(response.content)
 
   found = False
   for hostgroup in root.findall('IPHostGroup'):
-    if hostgroup.find('Name').text == config['sophos_iphostgroup_name']:
+    if hostgroup.find('Name').text == config['iphostgroup_name']:
       found = True
 
   # If IP host group already present, do nothing
   # Otherwise add IP host group
   if found:
-    print("Start: IP host group", config['sophos_iphostgroup_name'],
+    print("Start: IP host group", config['iphostgroup_name'],
     "already available. Nothing to do.")
   else:
-    print("Start: IP host group", config['sophos_iphostgroup_name'],
+    print("Start: IP host group", config['iphostgroup_name'],
     "not available. Adding it.")
-    xmldata = xml_addIpHostGroup(config['sophos_iphostgroup_name'])
+    xmldata = xml_addIpHostGroup(config['iphostgroup_name'])
     response = apiCall(xmldata)
     if not isApiCallSuccessful(response): return 1
 
@@ -50,7 +50,7 @@ def start():
 # Function called once at the end of Fail2Ban
 def stop():
   print("Stop: Do NOT clean IP host group",
-    config['sophos_iphostgroup_name'], "since this may affect",
+    config['iphostgroup_name'], "since this may affect",
     "existing firewall rules.")
   return 0
 
@@ -63,18 +63,18 @@ def check():
 # (resp. by stop of the jail or this action)
 def flush():
   print("Flush: Flushing all IPs in IP host group",
-    config['sophos_iphostgroup_name'])
+    config['iphostgroup_name'])
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()
   response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
-  # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
+  # Parse response, search 'IPHostGroup' elements for "iphostgroup_name"
   root = ET.fromstring(response.content)
 
   hostNames = list()
   for hostgroup in root.findall('IPHostGroup'):
-    if hostgroup.find('Name').text == config['sophos_iphostgroup_name']:
+    if hostgroup.find('Name').text == config['iphostgroup_name']:
       hostlist = hostgroup.find('HostList')
       if hostlist:
         for host in hostlist.findall('Host'):
@@ -83,7 +83,7 @@ def flush():
         continue
 
   # Flush members of 'IPHostGroup', otherwise the members could not be deleted
-  xmldata = xml_addIpHostGroup(config['sophos_iphostgroup_name'])
+  xmldata = xml_addIpHostGroup(config['iphostgroup_name'])
   response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
@@ -101,8 +101,8 @@ def ban(ip):
   print("Ban: Banning single IP", ip)
 
   # Add new IpHost as part of the IpHostGroup
-  ipHostName = config['sophos_iphost_prefix'] + ip
-  xmldata = xml_addIpHost(ipHostName,ip,config['sophos_iphostgroup_name'])
+  ipHostName = config['iphost_prefix'] + ip
+  xmldata = xml_addIpHost(ipHostName,ip,config['iphostgroup_name'])
   response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
@@ -115,7 +115,7 @@ def unban(ip):
 
   # Update IpHost to release any IpHostGroup bindings
   # Same request as adding an IpHost but without defining an IpHostGroup
-  ipHostName = config['sophos_iphost_prefix'] + ip
+  ipHostName = config['iphost_prefix'] + ip
   xmldata = xml_addIpHost(ipHostName,ip,'')
   response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1

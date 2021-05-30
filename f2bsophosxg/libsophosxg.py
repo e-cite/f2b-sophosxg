@@ -60,12 +60,11 @@ def isApiCallSuccessful(response):
   return True
 
 # Execute a single API call by sending provided xmldata
-# Arguments: xmldata for request,
-#   url of Sophos API Controller,
-#   verifySslCertificate default true
+# Arguments: xmldata for request
 # Returns: response on success, exceptions on failure
-def apiCall(xmldata, url, verifySslCertificate=True):
-  requesturl = url + "?reqxml=" + xmldata
+def apiCall(xmldata):
+  verifySslCertificate = config['verifySslCertificate']
+  requesturl = config['url'] + "?reqxml=" + xmldata
 
   if verifySslCertificate == False:
     # Suppress SSL verification warnings

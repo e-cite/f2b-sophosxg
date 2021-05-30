@@ -22,7 +22,7 @@ def start():
 
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()
-  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+  response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
@@ -42,7 +42,7 @@ def start():
     print("Start: IP host group", config['sophos_iphostgroup_name'],
     "not available. Adding it.")
     xmldata = xml_addIpHostGroup(config['sophos_iphostgroup_name'])
-    response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+    response = apiCall(xmldata)
     if not isApiCallSuccessful(response): return 1
 
   return 0
@@ -66,7 +66,7 @@ def flush():
     config['sophos_iphostgroup_name'])
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()
-  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+  response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
@@ -84,13 +84,13 @@ def flush():
 
   # Flush members of 'IPHostGroup', otherwise the members could not be deleted
   xmldata = xml_addIpHostGroup(config['sophos_iphostgroup_name'])
-  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+  response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
   # Finally delete each hostName found in IPHostGroup
   for hostName in hostNames:
     xmldata = xml_delIpHost(hostName)
-    response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+    response = apiCall(xmldata)
     if not isApiCallSuccessful(response): return 1
 
   return 0
@@ -104,7 +104,7 @@ def ban(ip):
   # Add new IpHost as part of the IpHostGroup
   ipHostName = config['sophos_iphost_prefix'] + ip
   xmldata = xml_addIpHost(ipHostName,ip,config['sophos_iphostgroup_name'])
-  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+  response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
   return 0
@@ -119,12 +119,12 @@ def unban(ip):
   # Same request as adding an IpHost but without defining an IpHostGroup
   ipHostName = config['sophos_iphost_prefix'] + ip
   xmldata = xml_addIpHost(ipHostName,ip,'')
-  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+  response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
   # Finally delete IpHost
   xmldata = xml_delIpHost(ipHostName)
-  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
+  response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1
 
   return 0

@@ -51,7 +51,7 @@ def apiCall(xmldata):
 
   # Sophos API response: Handle operation status (if any operation done)
   statusCode, statusText = xml_getRespOperationStatus(response.content)
-  # If there is an operationStatusCode and Message, then do error handling
+  # Do error handling only when statusCode and statusText are available
   if statusCode != None and statusText != None:
     # See: https://docs.sophos.com/nsg/sophos-firewall/18.0/API/index.html
     # Status 200: Configuration applied successfully.

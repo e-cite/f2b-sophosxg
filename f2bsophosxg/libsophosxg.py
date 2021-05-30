@@ -13,6 +13,26 @@ def apiResponse_loginStatus(response):
     raise ConnectionRefusedError('Sophos API login error: ' + loginStatusMsg)
   return 0
 
+# Parse the Sophos API response for status codes of operation, if available
+# Arguments: API response
+# Returns: 0 on success, on failure raise an 'ConnectionError' exception
+def apiResponse_operationStatus(response):
+  root = ET.fromstring(response.content)
+  status =  root.find('.//Status')
+  # Only do the error handling, if status is present in response
+  if status != None:
+    statusCode = status.get('code')
+    statusText = status.text
+    # See: https://docs.sophos.com/nsg/sophos-firewall/18.0/API/index.html
+    # Status 200: Configuration applied successfully.
+    # Status 202: Ip Host / IP Host Group "<DynamicValue>" has been renamed to
+    #   "<DynamicValue>" and updated successfully
+    if not (statusCode == '200' or statusCode == '202'):
+      raise ConnectionError(
+        'Sophos API error ' + statusCode + ': ' + statusText
+      )
+  return 0
+
 # Execute a single API call by sending provided xmldata
 # Arguments: xmldata for request
 # Returns: Response
@@ -27,6 +47,7 @@ def apiCall(xmldata):
 
   response = requests.get(requesturl, verify=verifySslCertificate)
   apiResponse_loginStatus(response)
+  apiResponse_operationStatus(response)
   return response
 
 # Creates an XML root element <Request>

@@ -42,6 +42,8 @@ def xml_getRespOperationStatus(responseContent):
 # Arguments: response
 # Returns: True on successful, False on unsuccessful
 def isApiCallSuccessful(response):
+  if response == None:
+    return False
   # Sophos API response: Handle login status
   loginStatusText = xml_getRespLoginStatus(response.content)
   if loginStatusText != 'Authentication Successful':
@@ -66,7 +68,7 @@ def isApiCallSuccessful(response):
 
 # Execute a single API call by sending provided xmldata
 # Arguments: xmldata for request
-# Returns: response on success, exceptions on failure
+# Returns: response on success, None or exceptions on failure
 def apiCall(xmldata):
   verifySslCertificate = config['verifySslCertificate']
   requesturl = config['url'] + "?reqxml=" + xmldata
@@ -76,7 +78,14 @@ def apiCall(xmldata):
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-  response = requests.get(requesturl, verify=verifySslCertificate)
+  try:
+    response = requests.get(requesturl, verify=verifySslCertificate)
+  except requests.exceptions.SSLError:
+    print("SSLError: Probably a self-signed SSL certificate is used at the",
+    "API and verifySslCertificate is set as 'True'.",
+    "Try using a proper SSL certificate or setting verifySslCertificate",
+    "as 'False'.")
+    response = None
 
   return response
 

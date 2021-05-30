@@ -2,13 +2,38 @@ from f2bsophosxg.libutil import getConfig
 import requests
 import xml.etree.ElementTree as ET
 
+# Parse the Sophos API XML response content and extract the login status
+#   message text
+# Arguments: XML content of response
+# Returns: Login status message text, None when XML element not found
+def xml_getRespLoginStatus(responseContent):
+  root = ET.fromstring(responseContent)
+  login = root.find('Login')
+  loginStatusMsg =  login.find('status').text
+  return loginStatusMsg
+
+# Parse the Sophos API XML response content and extract the operation status,
+#   if available
+# Arguments: XML content of response
+# Returns: Tuple (Operation status code, operation status message text) when
+#   XML element found, otherwise tuple (None, None) when not found
+def xml_getRespOperationStatus(responseContent):
+  root = ET.fromstring(responseContent)
+  status =  root.find('.//Status')
+  # Only extract status codes, if XML element is present in response
+  if status != None:
+    statusCode = status.get('code')
+    statusText = status.text
+    return (statusCode, statusText)
+
+  # If no XML element is present in response, return tuple (None, None)
+  return (None, None)
+
 # Parse the Sophos API response for login status message text
 # Arguments: API response
 # Returns: 0 on success, on failure raise an 'ConnectionRefusedError' exception
 def apiResponse_loginStatus(response):
-  root = ET.fromstring(response.content)
-  login = root.find('Login')
-  loginStatusMsg =  login.find('status').text
+  loginStatusMsg = xml_getRespLoginStatus(response.content)
   if loginStatusMsg != 'Authentication Successful':
     raise ConnectionRefusedError('Sophos API login error: ' + loginStatusMsg)
   return 0
@@ -17,12 +42,9 @@ def apiResponse_loginStatus(response):
 # Arguments: API response
 # Returns: 0 on success, on failure raise an 'ConnectionError' exception
 def apiResponse_operationStatus(response):
-  root = ET.fromstring(response.content)
-  status =  root.find('.//Status')
-  # Only do the error handling, if status is present in response
-  if status != None:
-    statusCode = status.get('code')
-    statusText = status.text
+  statusCode, statusText = xml_getRespOperationStatus(response.content)
+  # If there is an operationStatusCode and Message, then do error handling
+  if statusCode != None and statusText != None:
     # See: https://docs.sophos.com/nsg/sophos-firewall/18.0/API/index.html
     # Status 200: Configuration applied successfully.
     # Status 202: Ip Host / IP Host Group "<DynamicValue>" has been renamed to

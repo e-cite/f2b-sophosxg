@@ -9,10 +9,10 @@ def readConfig(file):
     config = json.load(f)
   return config
 
-# Getter function to get config parameters
+# Getter function to get config value
 # Arguments: Requested parameter
 # Returns: Value of requested parameter
-def getConfig(param):
+def getConfigValue(param):
   config = readConfig('config.json')
   value = config[param]
   return value

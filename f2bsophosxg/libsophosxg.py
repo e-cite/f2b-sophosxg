@@ -1,4 +1,4 @@
-from f2bsophosxg.libutil import getConfig
+from f2bsophosxg.libutil import getConfigValue
 import requests
 import xml.etree.ElementTree as ET
 
@@ -93,8 +93,8 @@ def xml_addLoginElement(elem_root):
   elem_password = ET.SubElement(elem_login, 'Password')
 
   # Define values of the elements <Login>
-  elem_username.text = getConfig('user')
-  elem_password.text = getConfig('pass')
+  elem_username.text = getConfigValue('user')
+  elem_password.text = getConfigValue('pass')
 
   return elem_login
 

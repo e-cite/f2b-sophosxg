@@ -29,6 +29,33 @@ def xml_getRespOperationStatus(responseContent):
   # If no XML element is present in response, return tuple (None, None)
   return (None, None)
 
+# Parse the Sophos API response and determines whether the API call was
+#   successful or not
+# Arguments: response
+# Returns: True on successful, False on unsuccessful
+def isApiCallSuccessful(response):
+  # Sophos API response: Handle login status
+  loginStatusText = xml_getRespLoginStatus(response.content)
+  if loginStatusText != 'Authentication Successful':
+    print('Sophos API login error: ' + loginStatusText)
+    return False
+
+  # Sophos API response: Handle operation status (if any operation done)
+  operationStatusCode, operationStatusText = xml_getRespOperationStatus(response.content)
+  # Do error handling only when operationStatusCode is available
+  if operationStatusCode != None:
+    # See: https://docs.sophos.com/nsg/sophos-firewall/18.0/API/index.html
+    # Status 200: Configuration applied successfully.
+    # Status 202: Ip Host / IP Host Group "<DynamicValue>" has been renamed to
+    #   "<DynamicValue>" and updated successfully
+    if not (operationStatusCode == '200' or operationStatusCode == '202'):
+      print(
+        'Sophos API error ' + operationStatusCode + ': ' + operationStatusText
+      )
+      return False
+
+  return True
+
 # Execute a single API call by sending provided xmldata
 # Arguments: xmldata for request,
 #   url of Sophos API Controller,

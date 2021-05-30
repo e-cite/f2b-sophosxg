@@ -1,8 +1,8 @@
 {
-  "url": "https://<IP>:4444/webconsole/APIController",
-  "verifySslCertificate": 1,
-  "user": "apiuser",
-  "pass": "password",
-  "iphost_prefix": "f2b_",
-  "iphostgroup_name": "f2b_blockings"
+  "url":"https://<IP/Domain:Port>/webconsole/APIController",
+  "verifySslCertificate":true,
+  "user":"apiuser",
+  "pass":"password",
+  "iphost_prefix":"f2b_",
+  "iphostgroup_name":"f2b_blockings"
 }

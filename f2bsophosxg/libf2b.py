@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 from f2bsophosxg.libutil import (
   readConfig,
+  isConfigValid,
   isValidIp
 )
 from f2bsophosxg.libsophosxg import (
@@ -14,6 +15,8 @@ from f2bsophosxg.libsophosxg import (
 
 # Globally load the config
 config = readConfig('config.json')
+if not isConfigValid(config):
+  config = None
 
 # Function called once at the start of Fail2Ban.
 def start():

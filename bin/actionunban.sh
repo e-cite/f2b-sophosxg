@@ -3,10 +3,14 @@
 function actionunban {
 PYTHON_ARG="$1" python3 - <<END
 import os
+import sys
 ip = os.environ['PYTHON_ARG']
 import f2bsophosxg.libf2b
-f2bsophosxg.libf2b.unban(ip)
+ret = f2bsophosxg.libf2b.unban(ip)
+sys.exit(ret)
 END
 }
 # Call the function
 actionunban $1
+RET=$?
+exit $RET

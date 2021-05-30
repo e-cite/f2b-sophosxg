@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 from f2bsophosxg.libutil import (
-  getConfigValue,
+  readConfig,
   isValidIp
 )
 from f2bsophosxg.libsophosxg import (
@@ -12,14 +12,17 @@ from f2bsophosxg.libsophosxg import (
   xml_getIpHostGroup
 )
 
+# Globally load the config
+config = readConfig('config.json')
+
 # Function called once at the start of Fail2Ban.
 def start():
-  print("Start: Ensure IP host group", getConfigValue('sophos_iphostgroup_name'),
+  print("Start: Ensure IP host group", config['sophos_iphostgroup_name'],
     "is available.")
 
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()
-  response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
   if not isApiCallSuccessful(response): return 1
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
@@ -27,19 +30,19 @@ def start():
 
   found = False
   for hostgroup in root.findall('IPHostGroup'):
-    if hostgroup.find('Name').text == getConfigValue('sophos_iphostgroup_name'):
+    if hostgroup.find('Name').text == config['sophos_iphostgroup_name']:
       found = True
 
   # If IP host group already present, do nothing
   # Otherwise add IP host group
   if found:
-    print("Start: IP host group", getConfigValue('sophos_iphostgroup_name'),
+    print("Start: IP host group", config['sophos_iphostgroup_name'],
     "already available. Nothing to do.")
   else:
-    print("Start: IP host group", getConfigValue('sophos_iphostgroup_name'),
+    print("Start: IP host group", config['sophos_iphostgroup_name'],
     "not available. Adding it.")
-    xmldata = xml_addIpHostGroup(getConfigValue('sophos_iphostgroup_name'))
-    response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+    xmldata = xml_addIpHostGroup(config['sophos_iphostgroup_name'])
+    response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
     if not isApiCallSuccessful(response): return 1
 
   return 0
@@ -47,7 +50,7 @@ def start():
 # Function called once at the end of Fail2Ban
 def stop():
   print("Stop: Do NOT clean IP host group",
-    getConfigValue('sophos_iphostgroup_name'), "since this may affect",
+    config['sophos_iphostgroup_name'], "since this may affect",
     "existing firewall rules.")
   return 0
 
@@ -60,10 +63,10 @@ def check():
 # (resp. by stop of the jail or this action)
 def flush():
   print("Flush: Flushing all IPs in IP host group",
-    getConfigValue('sophos_iphostgroup_name'))
+    config['sophos_iphostgroup_name'])
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()
-  response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
   if not isApiCallSuccessful(response): return 1
 
   # Parse response, search 'IPHostGroup' elements for "sophos_iphostgroup_name"
@@ -71,7 +74,7 @@ def flush():
 
   hostNames = list()
   for hostgroup in root.findall('IPHostGroup'):
-    if hostgroup.find('Name').text == getConfigValue('sophos_iphostgroup_name'):
+    if hostgroup.find('Name').text == config['sophos_iphostgroup_name']:
       hostlist = hostgroup.find('HostList')
       if hostlist:
         for host in hostlist.findall('Host'):
@@ -80,14 +83,14 @@ def flush():
         continue
 
   # Flush members of 'IPHostGroup', otherwise the members could not be deleted
-  xmldata = xml_addIpHostGroup(getConfigValue('sophos_iphostgroup_name'))
-  response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+  xmldata = xml_addIpHostGroup(config['sophos_iphostgroup_name'])
+  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
   if not isApiCallSuccessful(response): return 1
 
   # Finally delete each hostName found in IPHostGroup
   for hostName in hostNames:
     xmldata = xml_delIpHost(hostName)
-    response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+    response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
     if not isApiCallSuccessful(response): return 1
 
   return 0
@@ -99,9 +102,9 @@ def ban(ip):
   print("Ban: Banning single IP", ip)
 
   # Add new IpHost as part of the IpHostGroup
-  ipHostName = getConfigValue('sophos_iphost_prefix') + ip
-  xmldata = xml_addIpHost(ipHostName,ip,getConfigValue('sophos_iphostgroup_name'))
-  response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+  ipHostName = config['sophos_iphost_prefix'] + ip
+  xmldata = xml_addIpHost(ipHostName,ip,config['sophos_iphostgroup_name'])
+  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
   if not isApiCallSuccessful(response): return 1
 
   return 0
@@ -114,14 +117,14 @@ def unban(ip):
 
   # Update IpHost to release any IpHostGroup bindings
   # Same request as adding an IpHost but without defining an IpHostGroup
-  ipHostName = getConfigValue('sophos_iphost_prefix') + ip
+  ipHostName = config['sophos_iphost_prefix'] + ip
   xmldata = xml_addIpHost(ipHostName,ip,'')
-  response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
   if not isApiCallSuccessful(response): return 1
 
   # Finally delete IpHost
   xmldata = xml_delIpHost(ipHostName)
-  response = apiCall(xmldata,getConfigValue('url'),getConfigValue('verifySslCertificate'))
+  response = apiCall(xmldata,config['url'],config['verifySslCertificate'])
   if not isApiCallSuccessful(response): return 1
 
   return 0

@@ -1,6 +1,9 @@
-from f2bsophosxg.libutil import getConfigValue
 import requests
+from f2bsophosxg.libutil import (readConfig)
 import xml.etree.ElementTree as ET
+
+# Globally load the config
+config = readConfig('config.json')
 
 # Parse the Sophos API XML response content and extract the login status
 #   message text
@@ -93,8 +96,8 @@ def xml_addLoginElement(elem_root):
   elem_password = ET.SubElement(elem_login, 'Password')
 
   # Define values of the elements <Login>
-  elem_username.text = getConfigValue('user')
-  elem_password.text = getConfigValue('pass')
+  elem_username.text = config['user']
+  elem_password.text = config['pass']
 
   return elem_login
 

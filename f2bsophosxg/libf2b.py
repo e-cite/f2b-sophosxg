@@ -56,7 +56,7 @@ def check():
 # Function called once to flush (clear) all IPS, by shutdown
 # (resp. by stop of the jail or this action)
 def flush():
-  print("Stop: Flushing all IPs in IP host group",
+  print("Flush: Flushing all IPs in IP host group",
     getConfig('sophos_iphostgroup_name'))
   # Get all elements of IpHostGroup
   xmldata = xml_getIpHostGroup()

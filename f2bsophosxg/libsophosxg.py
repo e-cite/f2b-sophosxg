@@ -1,14 +1,6 @@
 import requests
-from f2bsophosxg.libutil import (
-  readConfig,
-  isConfigValid
-)
+from f2bsophosxg.config import config
 import xml.etree.ElementTree as ET
-
-# Globally load the config
-config = readConfig('config.json')
-if not isConfigValid(config):
-  config = None
 
 # Parse the Sophos API XML response content and extract the login status
 #   message text

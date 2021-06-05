@@ -24,7 +24,8 @@ optional arguments:
 ```
 
 ## Overview
-Fail2ban generally uses these commands (called "actions") to handle the blockings:
+Fail2ban generally uses these commands (called "actions") to handle the
+blockings:
 - `actionstart`: command executed on demand at the first ban or at the start of
   Fail2Ban
 - `actionstop`: command executed at the stop of jail (or at the end of

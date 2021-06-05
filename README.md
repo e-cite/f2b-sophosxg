@@ -1,10 +1,27 @@
 # Fail2ban Sophos XG API
 Access the Sophos XG API from Fail2ban to block hosts on perimeter firewall
 
-This repository contains scripts and a small python library to call the
+This repository contains a program and a small python library to call the
 Sophos XG API from Fail2ban. With this, you can enable Fail2ban to block
 malicious hosts not on the internal host firewall, but on the perimeter
 firewall.
+
+## Usage
+```shell
+$ python3 f2b-sophosxg.py --help
+usage: f2b-sophosxg.py [-h] [--ip IP] {start,stop,check,flush,ban,unban}
+
+f2b-sophosxg: Access SophosXG API from fail2ban to block hosts on perimeter
+firewall.
+
+positional arguments:
+  {start,stop,check,flush,ban,unban}
+                        Action to execute
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --ip IP               IPv4 address, required for action 'ban' or 'unban'
+```
 
 ## Overview
 Fail2ban generally uses these commands (called "actions") to handle the blockings:
@@ -18,8 +35,8 @@ Fail2ban generally uses these commands (called "actions") to handle the blocking
 - `actionban`: command executed when banning an IP
 - `actionunban`: command executed when unbanning an IP
 
-You can configure Fail2ban to call the action scripts from this repository
-instead of the default scripts. With that, Fail2ban will now provide you an
+You can configure Fail2ban to call the program from this repository instead
+of the default action scripts. With that, Fail2ban will now provide you an
 IP host group `{iphostgroup_name}` on your Sophos XG firewall containg all
 currently blocked IP hosts.
 
@@ -49,7 +66,7 @@ TBD
 
 ## Details
 The repository has the following major parts:
-- `bin/`: Bash-Scripts calling the python functions from the library
+- `f2b-sophosxg.py`: Python-Program calling the functions from the library
 - `f2bsophosxg/`: Python library implementing each Fail2ban actions as described
   above
   - `libf2b.py`: Implementing the Fail2ban actions

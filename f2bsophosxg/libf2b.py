@@ -44,7 +44,7 @@ def start():
 
 # Function called once at the end of Fail2Ban
 def stop():
-  print("Stop: Do NOT clean IP host group",
+  print("Stop: Do NOT delete IP host group",
     config['iphostgroup_name'], "since this may affect",
     "existing firewall rules.")
   return 0

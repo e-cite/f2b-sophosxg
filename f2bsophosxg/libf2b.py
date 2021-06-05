@@ -7,6 +7,7 @@ from f2bsophosxg.libsophosxg import (
   xml_addIpHostGroup,
   xml_addIpHost,
   xml_delIpHost,
+  xml_getIpHost,
   xml_getIpHostGroup
 )
 
@@ -112,9 +113,28 @@ def unban(ip):
   if not isValidIp(ip): return 1
   print("Unban: Unbanning single IP", ip)
 
+  ipHostName = config['iphost_prefix'] + ip
+
+  # Get all elements of IP host
+  xmldata = xml_getIpHost()
+  response = apiCall(xmldata)
+  if not isApiCallSuccessful(response): return 1
+
+  # Parse response, search 'IPHost' elements for "ipHostName"
+  root = ET.fromstring(response.content)
+
+  # Searching ipHostName in response to check whether its already available
+  found = False
+  for host in root.findall('IPHost'):
+    if host.find('Name').text == ipHostName:
+      found = True
+
+  if not found:
+    return 0
+  # Otherwise (host present), we have to delete it
+
   # Update IpHost to release any IpHostGroup bindings
   # Same request as adding an IpHost but without defining an IpHostGroup
-  ipHostName = config['iphost_prefix'] + ip
   xmldata = xml_addIpHost(ipHostName,ip,'')
   response = apiCall(xmldata)
   if not isApiCallSuccessful(response): return 1

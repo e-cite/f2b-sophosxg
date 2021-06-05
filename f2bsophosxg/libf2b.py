@@ -25,8 +25,12 @@ def start():
 
   found = False
   for hostgroup in root.findall('IPHostGroup'):
-    if hostgroup.find('Name').text == config['iphostgroup_name']:
-      found = True
+    # Bugfix: When no IP host group is available
+    # (hostgroup.find('Name') = None),
+    # then accessing hostgroup.find('Name').text will fail!
+    if hostgroup.find('Name') is not None:
+      if hostgroup.find('Name').text == config['iphostgroup_name']:
+        found = True
 
   # If IP host group already present, do nothing
   # Otherwise add IP host group

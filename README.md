@@ -34,6 +34,15 @@ for the IP host group and you are done.
 
 ## Installation
 TBD
+### Sophos XG Configuration
+- Allow access to the Sophos XG API from the Fail2ban hosts by
+  "Backup & Firmware" / "API":
+  - Enable "API configuration"
+  - Add IP address of th Fail2ban hosts to the allowed IP addresses list
+
+### Fail2ban Configuration
+
+
 
 ## Configuration
 TBD

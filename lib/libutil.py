@@ -1,4 +1,3 @@
-import ipaddress
 import json
 import re
 
@@ -43,14 +42,3 @@ def isConfigValid(config):
     return False
 
   return True
-
-# Checker function to proof the validity of an IP address
-# Arguments: IP address to be checked
-# Returns: True on valid, False on invalid
-def isValidIp(ip):
-  try:
-    ret = ipaddress.ip_address(ip)
-    return True
-  except ValueError:
-    print("IP address is not valid.")
-    return False

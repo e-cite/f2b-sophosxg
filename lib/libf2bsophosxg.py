@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
+import ipaddress
 from lib.libf2b import f2b
 from lib.libsophosxg import sophosxg
-from lib.libutil import isValidIp
 
 # Derivced class from f2b with SophosXG properties
 class f2bsophosxg(f2b):
@@ -95,7 +95,7 @@ class f2bsophosxg(f2b):
 
   # Function called when banning an IP.
   def ban(self,ip):
-    if not isValidIp(ip): return 1
+    if not self.__isValidIp(ip): return 1
     print("Ban: Banning single IP", ip)
 
     # Add new IpHost as part of the IpHostGroup
@@ -108,7 +108,7 @@ class f2bsophosxg(f2b):
 
   # Function called when unbanning an IP.
   def unban(self,ip):
-    if not isValidIp(ip): return 1
+    if not self.__isValidIp(ip): return 1
     print("Unban: Unbanning single IP", ip)
 
     ipHostName = self.sxg.config['iphost_prefix'] + ip
@@ -143,3 +143,14 @@ class f2bsophosxg(f2b):
     if not self.sxg.isApiCallSuccessful(response): return 1
 
     return 0
+
+  # Checker function to proof the validity of an IP address
+  # Arguments: IP address to be checked
+  # Returns: True on valid, False on invalid
+  def __isValidIp(self,ip):
+    try:
+      ret = ipaddress.ip_address(ip)
+      return True
+    except ValueError:
+      print("IP address is not valid.")
+      return False

@@ -1,10 +1,8 @@
 import requests
+import json
+import re
 from os import sys
 import xml.etree.ElementTree as ET
-from lib.libutil import (
-  readConfig,
-  isConfigValid
-)
 
 class sophosxg:
   # Constructor method
@@ -12,14 +10,56 @@ class sophosxg:
   def __init__(self,file):
     self.configfile = file
     try:
-      self.config = readConfig(self.configfile)
+      self.config = self.readConfig(self.configfile)
     except FileNotFoundError:
       print("Configuration file",self.configfile,"not found.")
       sys.exit(1)
 
-    if not isConfigValid(self.config):
+    if not self.isConfigValid(self.config):
       config = None
       sys.exit(1)
+
+  # Open and read the config file
+  # Arguments: Filename
+  # Returns: config-dict
+  def readConfig(self,file):
+    with open(file, 'r') as f:
+      config = json.load(f)
+    return config
+
+  # Checks given config for all parameters to be correct
+  # Arguments: config json dict
+  # Returns: True on valid, False on invalid
+  def isConfigValid(self,config):
+    if not re.search('^https:\/\/.+:\d{0,5}\/webconsole\/APIController$', config['url']):
+      print("Config: Parameter url format not valid.")
+      print("Config: Use this format: https://<IP/Domain:Port>/webconsole/APIController")
+      return False
+
+    if not isinstance(config['verifySslCertificate'], bool):
+      print("Config: Parameter verifySslCertificate is not a boolean value.")
+      return False
+
+    for param in ['user', 'pass', 'iphost_prefix', 'iphostgroup_name']:
+      if not isinstance(config[param], str):
+        print("Config: Parameter", param, "is not a string.")
+        return False
+
+    for param in ['iphost_prefix', 'iphostgroup_name']:
+      if re.search(',', config[param]):
+        print("Config: Parameter", param, "contains not allowed character ','.")
+        return False
+
+    if re.search('^#', config['iphost_prefix']):
+      print("Config: Parameter iphost_prefix is not allowed to start with character '#'.")
+      return False
+
+    maxLengthOfIpv4Address = 15 # Max. length of IPv4 address
+    maxLengthAllowed = 60 # Max. allowed characters for IP host name (Sophos API doc)
+    if (len(config['iphost_prefix']) + maxLengthOfIpv4Address) >= maxLengthAllowed:
+      return False
+
+    return True
 
   # Parse the Sophos API XML response content and extract the login status
   #   message text

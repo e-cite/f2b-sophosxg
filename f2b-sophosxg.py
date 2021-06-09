@@ -2,8 +2,6 @@ import sys
 import argparse
 import lib.libf2bsophosxg
 
-sys.path.append('f2bsophosxg')
-
 # Create argument parser and set description
 parser = argparse.ArgumentParser(
   description='f2b-sophosxg: Access SophosXG API from fail2ban to block hosts\

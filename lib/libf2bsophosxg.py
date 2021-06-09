@@ -1,12 +1,7 @@
-from lib.libf2b import f2b
 import xml.etree.ElementTree as ET
+from lib.libf2b import f2b
 from lib.libsophosxg import sophosxg
-from lib.libutil import (
-  readConfig,
-  isConfigValid,
-  isValidIp
-)
-
+from lib.libutil import isValidIp
 
 # Derivced class from f2b with SophosXG properties
 class f2bsophosxg(f2b):

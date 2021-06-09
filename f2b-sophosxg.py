@@ -21,10 +21,19 @@ parser.add_argument('--ip',
   help='IPv4 address, required for action \'ban\' or \'unban\'',
   required='ban' in sys.argv
 )
+# Optional argument
+parser.add_argument('--configfile',
+  help='Configuration file path'
+)
 
 args = parser.parse_args()
 
-configfile = '/usr/local/etc/f2b-sophosxg/config.json'
+# Use configfile argument if present, or default config file
+if args.configfile:
+  configfile = args.configfile
+else:
+  configfile = '/usr/local/etc/f2b-sophosxg/config.json'
+
 f2b = lib.libf2bsophosxg.f2bsophosxg(configfile)
 
 ret = 0

@@ -1,6 +1,6 @@
 import sys
 import argparse
-import f2bsophosxg.libf2b
+import lib.libf2bsophosxg
 
 sys.path.append('f2bsophosxg')
 
@@ -24,7 +24,8 @@ parser.add_argument('--ip',
 
 args = parser.parse_args()
 
-f2b = f2bsophosxg.libf2b.fail2ban()
+configfile = '/usr/local/etc/f2b-sophosxg/config.json'
+f2b = lib.libf2bsophosxg.f2bsophosxg(configfile)
 
 ret = 0
 

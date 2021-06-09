@@ -1,29 +1,28 @@
+from lib.libf2b import f2b
 import xml.etree.ElementTree as ET
-from f2bsophosxg.config import config
-from f2bsophosxg.libutil import isValidIp
-from f2bsophosxg.libsophosxg import (
-  isApiCallSuccessful,
-  apiCall,
-  xml_addIpHostGroup,
-  xml_addIpHost,
-  xml_delIpHost,
-  xml_getIpHost,
-  xml_getIpHostGroup
+from lib.libsophosxg import sophosxg
+from lib.libutil import (
+  readConfig,
+  isConfigValid,
+  isValidIp
 )
 
-class fail2ban:
-  def __init__(self):
-    print("Constructor")
+
+# Derivced class from f2b with SophosXG properties
+class f2bsophosxg(f2b):
+  # Constructor method creating an sophosxg object
+  def __init__(self,configfile):
+    self.sxg = sophosxg(configfile)
 
   # Method called once at the start of Fail2Ban.
   def start(self):
-    print("Start: Ensure IP host group", config['iphostgroup_name'],
+    print("Start: Ensure IP host group", self.sxg.config['iphostgroup_name'],
       "is available.")
 
     # Get all elements of IpHostGroup
-    xmldata = xml_getIpHostGroup()
-    response = apiCall(xmldata)
-    if not isApiCallSuccessful(response): return 1
+    xmldata = self.sxg.xml_getIpHostGroup()
+    response = self.sxg.apiCall(xmldata)
+    if not self.sxg.isApiCallSuccessful(response): return 1
 
     # Parse response, search 'IPHostGroup' elements for "iphostgroup_name"
     root = ET.fromstring(response.content)
@@ -34,51 +33,51 @@ class fail2ban:
       # (hostgroup.find('Name') = None),
       # then accessing hostgroup.find('Name').text will fail!
       if hostgroup.find('Name') is not None:
-        if hostgroup.find('Name').text == config['iphostgroup_name']:
+        if hostgroup.find('Name').text == self.sxg.config['iphostgroup_name']:
           found = True
 
     # If IP host group already present, do nothing
     # Otherwise add IP host group
     if found:
-      print("Start: IP host group", config['iphostgroup_name'],
+      print("Start: IP host group", self.sxg.config['iphostgroup_name'],
       "already available. Nothing to do.")
     else:
-      print("Start: IP host group", config['iphostgroup_name'],
+      print("Start: IP host group", self.sxg.config['iphostgroup_name'],
       "not available. Adding it.")
-      xmldata = xml_addIpHostGroup(config['iphostgroup_name'])
-      response = apiCall(xmldata)
-      if not isApiCallSuccessful(response): return 1
+      xmldata = self.sxg.xml_addIpHostGroup(self.sxg.config['iphostgroup_name'])
+      response = self.sxg.apiCall(xmldata)
+      if not self.sxg.isApiCallSuccessful(response): return 1
 
     return 0
 
   # Method called once at the end of Fail2Ban
-  def stop():
+  def stop(self):
     print("Stop: Do NOT delete IP host group",
-      config['iphostgroup_name'], "since this may affect",
+      self.sxg.config['iphostgroup_name'], "since this may affect",
       "existing firewall rules.")
     return 0
 
   # Method called once before each actionban command
-  def check():
+  def check(self):
     print("Check: There is nothing to check.")
     return 0
 
   # Function called once to flush (clear) all IPS, by shutdown
   # (resp. by stop of the jail or this action)
-  def flush():
+  def flush(self):
     print("Flush: Flushing all IPs in IP host group",
-      config['iphostgroup_name'])
+      self.sxg.config['iphostgroup_name'])
     # Get all elements of IpHostGroup
-    xmldata = xml_getIpHostGroup()
-    response = apiCall(xmldata)
-    if not isApiCallSuccessful(response): return 1
+    xmldata = self.sxg.xml_getIpHostGroup()
+    response = self.sxg.apiCall(xmldata)
+    if not self.sxg.isApiCallSuccessful(response): return 1
 
     # Parse response, search 'IPHostGroup' elements for "iphostgroup_name"
     root = ET.fromstring(response.content)
 
     hostNames = list()
     for hostgroup in root.findall('IPHostGroup'):
-      if hostgroup.find('Name').text == config['iphostgroup_name']:
+      if hostgroup.find('Name').text == self.sxg.config['iphostgroup_name']:
         hostlist = hostgroup.find('HostList')
         if hostlist:
           for host in hostlist.findall('Host'):
@@ -87,42 +86,42 @@ class fail2ban:
           continue
 
     # Flush members of 'IPHostGroup', otherwise the members could not be deleted
-    xmldata = xml_addIpHostGroup(config['iphostgroup_name'])
-    response = apiCall(xmldata)
-    if not isApiCallSuccessful(response): return 1
+    xmldata = self.sxg.xml_addIpHostGroup(self.sxg.config['iphostgroup_name'])
+    response = self.sxg.apiCall(xmldata)
+    if not self.sxg.isApiCallSuccessful(response): return 1
 
     # Finally delete each hostName found in IPHostGroup
     for hostName in hostNames:
-      xmldata = xml_delIpHost(hostName)
-      response = apiCall(xmldata)
-      if not isApiCallSuccessful(response): return 1
+      xmldata = self.sxg.xml_delIpHost(hostName)
+      response = self.sxg.apiCall(xmldata)
+      if not self.sxg.isApiCallSuccessful(response): return 1
 
     return 0
 
   # Function called when banning an IP.
-  def ban(ip):
+  def ban(self,ip):
     if not isValidIp(ip): return 1
     print("Ban: Banning single IP", ip)
 
     # Add new IpHost as part of the IpHostGroup
-    ipHostName = config['iphost_prefix'] + ip
-    xmldata = xml_addIpHost(ipHostName,ip,config['iphostgroup_name'])
-    response = apiCall(xmldata)
-    if not isApiCallSuccessful(response): return 1
+    ipHostName = self.sxg.config['iphost_prefix'] + ip
+    xmldata = self.sxg.xml_addIpHost(ipHostName,ip,self.sxg.config['iphostgroup_name'])
+    response = self.sxg.apiCall(xmldata)
+    if not self.sxg.isApiCallSuccessful(response): return 1
 
     return 0
 
   # Function called when unbanning an IP.
-  def unban(ip):
+  def unban(self,ip):
     if not isValidIp(ip): return 1
     print("Unban: Unbanning single IP", ip)
 
-    ipHostName = config['iphost_prefix'] + ip
+    ipHostName = self.sxg.config['iphost_prefix'] + ip
 
     # Get all elements of IP host
-    xmldata = xml_getIpHost()
-    response = apiCall(xmldata)
-    if not isApiCallSuccessful(response): return 1
+    xmldata = self.sxg.xml_getIpHost()
+    response = self.sxg.apiCall(xmldata)
+    if not self.sxg.isApiCallSuccessful(response): return 1
 
     # Parse response, search 'IPHost' elements for "ipHostName"
     root = ET.fromstring(response.content)
@@ -139,13 +138,13 @@ class fail2ban:
 
     # Update IpHost to release any IpHostGroup bindings
     # Same request as adding an IpHost but without defining an IpHostGroup
-    xmldata = xml_addIpHost(ipHostName,ip,'')
-    response = apiCall(xmldata)
-    if not isApiCallSuccessful(response): return 1
+    xmldata = self.sxg.xml_addIpHost(ipHostName,ip,'')
+    response = self.sxg.apiCall(xmldata)
+    if not self.sxg.isApiCallSuccessful(response): return 1
 
     # Finally delete IpHost
-    xmldata = xml_delIpHost(ipHostName)
-    response = apiCall(xmldata)
-    if not isApiCallSuccessful(response): return 1
+    xmldata = self.sxg.xml_delIpHost(ipHostName)
+    response = self.sxg.apiCall(xmldata)
+    if not self.sxg.isApiCallSuccessful(response): return 1
 
     return 0

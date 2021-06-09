@@ -24,20 +24,22 @@ parser.add_argument('--ip',
 
 args = parser.parse_args()
 
+f2b = f2bsophosxg.libf2b.fail2ban()
+
 ret = 0
 
 # Execute library function depending on choice
 if args.action == 'start':
-  ret = f2bsophosxg.libf2b.start()
+  ret = f2b.start()
 elif args.action == 'stop':
-  ret = f2bsophosxg.libf2b.stop()
+  ret = f2b.stop()
 elif args.action == 'check':
-  ret = f2bsophosxg.libf2b.check()
+  ret = f2b.check()
 elif args.action == 'flush':
-  ret = f2bsophosxg.libf2b.flush()
-elif args.action == 'ban':  
-  ret = f2bsophosxg.libf2b.ban(args.ip)
+  ret = f2b.flush()
+elif args.action == 'ban':
+  ret = f2b.ban(args.ip)
 elif args.action == 'unban':
-  ret = f2bsophosxg.libf2b.unban(args.ip)
+  ret = f2b.unban(args.ip)
 
 sys.exit(ret)

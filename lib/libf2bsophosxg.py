@@ -42,7 +42,8 @@ class f2bsophosxg(f2b):
       xmldata = self.sxg.xml_addIpHostGroup(self.sxg.config['iphostgroup_name'])
       response = self.sxg.apiCall(xmldata)
       if not self.sxg.isApiCallSuccessful(response): return 1
-
+    print("Start: Successfully ensured IP host group",
+      self.sxg.config['iphostgroup_name'], "is available.")
     return 0
 
   # Method called once at the end of Fail2Ban
@@ -90,7 +91,8 @@ class f2bsophosxg(f2b):
       xmldata = self.sxg.xml_delIpHost(hostName)
       response = self.sxg.apiCall(xmldata)
       if not self.sxg.isApiCallSuccessful(response): return 1
-
+    print("Flush: Successfully flushed all IPs in IP host group",
+      self.sxg.config['iphostgroup_name'])
     return 0
 
   # Function called when banning an IP.
@@ -103,7 +105,7 @@ class f2bsophosxg(f2b):
     xmldata = self.sxg.xml_addIpHost(ipHostName,ip,self.sxg.config['iphostgroup_name'])
     response = self.sxg.apiCall(xmldata)
     if not self.sxg.isApiCallSuccessful(response): return 1
-
+    print("Ban: Successfully banned single IP", ip)
     return 0
 
   # Function called when unbanning an IP.
@@ -128,6 +130,7 @@ class f2bsophosxg(f2b):
         found = True
 
     if not found:
+      print("Unban: IP host", ip, "not banned. Nothing to unban.")
       return 0
     # Otherwise (host present), we have to delete it
 
@@ -141,7 +144,7 @@ class f2bsophosxg(f2b):
     xmldata = self.sxg.xml_delIpHost(ipHostName)
     response = self.sxg.apiCall(xmldata)
     if not self.sxg.isApiCallSuccessful(response): return 1
-
+    print("Unban: Successfully unbanned single IP", ip)
     return 0
 
   # Checker function to proof the validity of an IP address

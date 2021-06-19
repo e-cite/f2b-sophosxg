@@ -13,7 +13,7 @@ def readConfig(file):
 
 # Create argument parser and set description
 parser = argparse.ArgumentParser(
-  description='f2b-sophosxg: Access SophosXG API from Fail2ban to block hosts\
+  description='f2b-sophosxg: Access Sophos XG API from Fail2ban to block hosts\
   on perimeter firewall.'
 )
 # Positional, required argument

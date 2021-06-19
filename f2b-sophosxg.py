@@ -1,11 +1,9 @@
 from os import read
+import json
 import sys
 import argparse
 import lib.libf2bsophosxg
 
-
-
-import json
 # Open and read the config file
 # Arguments: Filename
 # Returns: config-dict
@@ -13,10 +11,6 @@ def readConfig(file):
   with open(file, 'r') as f:
     config = json.load(f)
   return config
-
-
-
-
 
 # Create argument parser and set description
 parser = argparse.ArgumentParser(

@@ -5,7 +5,7 @@ from os import sys
 from f2bsophosxg.libf2b import f2b
 from f2bsophosxg.libsophosxg import sophosxg
 
-# Derivced class from f2b with SophosXG properties
+# Derived class from f2b with SophosXG properties
 class f2bsophosxg(f2b):
   # Constructor method creating an sophosxg object
   def __init__(self,config):

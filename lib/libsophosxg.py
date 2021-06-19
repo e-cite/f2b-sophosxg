@@ -203,8 +203,11 @@ class sophosxg:
 
     # Add individual elements
     elem_name = ET.SubElement(elem_entity, 'Name')
+    elem_description = ET.SubElement(elem_entity, 'Description')
     elem_ipfamily = ET.SubElement(elem_entity, 'IPFamily')
     elem_name.text = ipHostGroupName
+    elem_description.text =\
+      "This is a Fail2ban managed group. Do not edit manually!"
     elem_ipfamily.text = 'IPv4'
 
     return ET.tostring(elem_root, encoding="unicode")

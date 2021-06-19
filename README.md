@@ -9,9 +9,10 @@ firewall.
 ## Usage
 ```shell
 $ python3 f2b-sophosxg.py --help
-usage: f2b-sophosxg.py [-h] [--ip IP] {start,stop,check,flush,ban,unban}
+usage: f2b-sophosxg.py [-h] [--ip IP] [--configfile CONFIGFILE]
+                       {start,stop,check,flush,ban,unban}
 
-f2b-sophosxg: Access SophosXG API from Fail2ban to block hosts on perimeter
+f2b-sophosxg: Access Sophos XG API from Fail2ban to block hosts on perimeter
 firewall.
 
 positional arguments:
@@ -21,6 +22,8 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --ip IP               IPv4 address, required for action 'ban' or 'unban'
+  --configfile CONFIGFILE
+                        Configuration file path
 ```
 
 ## Overview
@@ -33,9 +36,9 @@ The IP host group can then be used in firewall rules to block hosts or it can
 be used for anything else. Fail2ban and this program simply dynamically add or
 delete IP hosts to this group, but you can decide how to deal with the group.
 
-**Nothing else than this single group is touched on the Sophos XG.**
+**Nothing else except this single IP host group is touched on the Sophos XG.**
 
-When having multiple hosts for blocking, give each one an individual name
+When having multiple hosts using Fail2ban, give each one an individual name
 for the IP host group and you are done.
 
 ## Installation
@@ -61,11 +64,11 @@ action.d/sophosxg.conf    ->  /etc/fail2ban/action.d/sophosxg.conf
 
 ## Configuration
 Configuration is done in three steps:
-- Create API user on SophosXG
-- Configure `f2b-sophosxg.py` to be able to access SophosXG API
+- Create API user on Sophos XG
+- Configure `config.json` with a valid configuration to access Sophos XG API
 - Configure Fail2ban to use `sophosxg.conf` as actions
 
-### SophosXG Configuration
+### Sophos XG Configuration
 - Allow access to the Sophos XG API from the Fail2ban hosts:
   - "Backup & Firmware" / "API":
   - Enable "API configuration"
@@ -85,7 +88,7 @@ Configuration is done in three steps:
     - Set "Password" `password`
 
 ### `f2b-sophosxg.py` Configuration
-Set credentials for the SophosXG API in
+Set credentials for the Sophos XG API in
 `/usr/local/etc/f2b-sophosxg/config.json` as follows:
 ```json
 {
@@ -137,21 +140,25 @@ blockings:
 
 ### Structure of the repository
 The repository has the following major parts:
-- `f2b-sophosxg.py`: Python-Program calling the functions from the library
+- `f2b-sophosxg.py`: Main python program calling the functions from the library
 - `f2bsophosxg/`: Python library implementing each Fail2ban actions as described
   above
-  - `libf2b.py`: Implementing the Fail2ban actions
-  - `libsophosxg.py`: Building XML requests for the Sophos XG API and
-    implementing the API calls and the error handling
-  - `libutil.py`: Some small helper functions (checking for valid IP,
-    load config, etc.)
+  - `libf2b.py`: Defining a base class for generic Fail2ban actions
+  - `libf2bsophosxg.py`: Derived class from the base class for Sophos XG
+      specific Fail2ban actions
+  - `libsophosxg.py`: A dedicated class implementing Sophos XG API calls and
+      the error handling
 - `action.d/`: Fail2ban configuration template for
   `/etc/fail2ban/config/action.d/`
 
 ### Functionality of the program and the libraries
-The library `libf2b.py `implements each of the Fail2ban actions described
-above. Basically it calles functions from `libsohposxg.py`. It creates the XML
-requests for the desired Fail2ban actions and sends it to the Sophos XG API.
+The library `libf2b.py `implements an abstract base class with each of the
+generic Fail2ban actions described above. Basically this class can be used
+to derive a specific class for each API / firewall / etc. that should be
+available to Fail2ban. This is called `libf2bsophosxg.py` here for an
+implementation of the Sophos XG firewall API. The class uses
+`libsophosxg.py` to create the XML requests for the desired Fail2ban actions
+and sending them to the Sophos XG API.
 For example, API calls are done to:
 - add IP host
 - add IP host group

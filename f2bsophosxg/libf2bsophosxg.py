@@ -2,8 +2,8 @@ import xml.etree.ElementTree as ET
 import ipaddress
 import re
 from os import sys
-from lib.libf2b import f2b
-from lib.libsophosxg import sophosxg
+from f2bsophosxg.libf2b import f2b
+from f2bsophosxg.libsophosxg import sophosxg
 
 # Derivced class from f2b with SophosXG properties
 class f2bsophosxg(f2b):

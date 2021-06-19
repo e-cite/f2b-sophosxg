@@ -1,7 +1,7 @@
 import json
 import sys
 import argparse
-import lib.libf2bsophosxg
+import f2bsophosxg.libf2bsophosxg
 
 # Open and read the config file
 # Arguments: Filename
@@ -47,7 +47,7 @@ else:
 config = readConfig(configfile)
 
 # Instantiate object
-f2b = lib.libf2bsophosxg.f2bsophosxg(config)
+f2b = f2bsophosxg.libf2bsophosxg.f2bsophosxg(config)
 
 # Set default return code
 ret = 0

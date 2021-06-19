@@ -80,6 +80,10 @@ class f2bsophosxg(f2b):
             hostNames.append(host.text)
         else:
           continue
+    if hostNames == []:
+      print("Flush: IP host group", self.sxg.config['iphostgroup_name'],
+        "not present or empty. Nothing to do.")
+      return 0
 
     # Flush members of 'IPHostGroup', otherwise the members could not be deleted
     xmldata = self.sxg.xml_addIpHostGroup(self.sxg.config['iphostgroup_name'])

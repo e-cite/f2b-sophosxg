@@ -1,6 +1,22 @@
+from os import read
 import sys
 import argparse
 import lib.libf2bsophosxg
+
+
+
+import json
+# Open and read the config file
+# Arguments: Filename
+# Returns: config-dict
+def readConfig(file):
+  with open(file, 'r') as f:
+    config = json.load(f)
+  return config
+
+
+
+
 
 # Create argument parser and set description
 parser = argparse.ArgumentParser(
@@ -35,8 +51,10 @@ if args.configfile:
 else:
   configfile = '/usr/local/etc/f2b-sophosxg/config.json'
 
+config = readConfig(configfile)
+
 # Instantiate object
-f2b = lib.libf2bsophosxg.f2bsophosxg(configfile)
+f2b = lib.libf2bsophosxg.f2bsophosxg(config)
 
 # Set default return code
 ret = 0

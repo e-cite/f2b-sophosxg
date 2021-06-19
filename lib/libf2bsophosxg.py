@@ -1,17 +1,57 @@
 import xml.etree.ElementTree as ET
 import ipaddress
+import re
+from os import sys
 from lib.libf2b import f2b
 from lib.libsophosxg import sophosxg
 
 # Derivced class from f2b with SophosXG properties
 class f2bsophosxg(f2b):
   # Constructor method creating an sophosxg object
-  def __init__(self,configfile):
-    self.sxg = sophosxg(configfile)
+  def __init__(self,config):
+    try:
+      self.config = {
+        'iphost_prefix': config['iphost_prefix'],
+        'iphostgroup_name': config['iphostgroup_name']
+      }
+    except KeyError:
+      print("Configuration dict not valid or keys not as required.")
+      sys.exit(1)
+
+    if not self.isConfigValid(self.config):
+      config = None
+      sys.exit(1)
+
+    self.sxg = sophosxg(config)
+
+  # Checks given config for all parameters to be correct
+  # Arguments: config json dict
+  # Returns: True on valid, False on invalid
+  def isConfigValid(self,config):
+    for param in ['iphost_prefix', 'iphostgroup_name']:
+      if not isinstance(config[param], str):
+        print("Config: Parameter", param, "is not a string.")
+        return False
+
+    for param in ['iphost_prefix', 'iphostgroup_name']:
+      if re.search(',', config[param]):
+        print("Config: Parameter", param, "contains not allowed character ','.")
+        return False
+
+    if re.search('^#', config['iphost_prefix']):
+      print("Config: Parameter iphost_prefix is not allowed to start with character '#'.")
+      return False
+
+    maxLengthOfIpv4Address = 15 # Max. length of IPv4 address
+    maxLengthAllowed = 60 # Max. allowed characters for IP host name (Sophos API doc)
+    if (len(config['iphost_prefix']) + maxLengthOfIpv4Address) >= maxLengthAllowed:
+      return False
+
+    return True
 
   # Method called once at the start of Fail2Ban.
   def start(self):
-    print("Start: Ensure IP host group", self.sxg.config['iphostgroup_name'],
+    print("Start: Ensure IP host group", self.config['iphostgroup_name'],
       "is available.")
 
     # Get all elements of IpHostGroup
@@ -28,28 +68,28 @@ class f2bsophosxg(f2b):
       # (hostgroup.find('Name') = None),
       # then accessing hostgroup.find('Name').text will fail!
       if hostgroup.find('Name') is not None:
-        if hostgroup.find('Name').text == self.sxg.config['iphostgroup_name']:
+        if hostgroup.find('Name').text == self.config['iphostgroup_name']:
           found = True
 
     # If IP host group already present, do nothing
     # Otherwise add IP host group
     if found:
-      print("Start: IP host group", self.sxg.config['iphostgroup_name'],
+      print("Start: IP host group", self.config['iphostgroup_name'],
       "already available. Nothing to do.")
     else:
-      print("Start: IP host group", self.sxg.config['iphostgroup_name'],
+      print("Start: IP host group", self.config['iphostgroup_name'],
       "not available. Adding it.")
-      xmldata = self.sxg.xml_addIpHostGroup(self.sxg.config['iphostgroup_name'])
+      xmldata = self.sxg.xml_addIpHostGroup(self.config['iphostgroup_name'])
       response = self.sxg.apiCall(xmldata)
       if not self.sxg.isApiCallSuccessful(response): return 1
     print("Start: Successfully ensured IP host group",
-      self.sxg.config['iphostgroup_name'], "is available.")
+      self.config['iphostgroup_name'], "is available.")
     return 0
 
   # Method called once at the end of Fail2Ban
   def stop(self):
     print("Stop: Do NOT delete IP host group",
-      self.sxg.config['iphostgroup_name'], "since this may affect",
+      self.config['iphostgroup_name'], "since this may affect",
       "existing firewall rules.")
     return 0
 
@@ -62,7 +102,7 @@ class f2bsophosxg(f2b):
   # (resp. by stop of the jail or this action)
   def flush(self):
     print("Flush: Flushing all IPs in IP host group",
-      self.sxg.config['iphostgroup_name'])
+      self.config['iphostgroup_name'])
     # Get all elements of IpHostGroup
     xmldata = self.sxg.xml_getIpHostGroup()
     response = self.sxg.apiCall(xmldata)
@@ -73,7 +113,7 @@ class f2bsophosxg(f2b):
 
     hostNames = list()
     for hostgroup in root.findall('IPHostGroup'):
-      if hostgroup.find('Name').text == self.sxg.config['iphostgroup_name']:
+      if hostgroup.find('Name').text == self.config['iphostgroup_name']:
         hostlist = hostgroup.find('HostList')
         if hostlist:
           for host in hostlist.findall('Host'):
@@ -81,12 +121,12 @@ class f2bsophosxg(f2b):
         else:
           continue
     if hostNames == []:
-      print("Flush: IP host group", self.sxg.config['iphostgroup_name'],
+      print("Flush: IP host group", self.config['iphostgroup_name'],
         "not present or empty. Nothing to do.")
       return 0
 
     # Flush members of 'IPHostGroup', otherwise the members could not be deleted
-    xmldata = self.sxg.xml_addIpHostGroup(self.sxg.config['iphostgroup_name'])
+    xmldata = self.sxg.xml_addIpHostGroup(self.config['iphostgroup_name'])
     response = self.sxg.apiCall(xmldata)
     if not self.sxg.isApiCallSuccessful(response): return 1
 
@@ -96,7 +136,7 @@ class f2bsophosxg(f2b):
       response = self.sxg.apiCall(xmldata)
       if not self.sxg.isApiCallSuccessful(response): return 1
     print("Flush: Successfully flushed all IPs in IP host group",
-      self.sxg.config['iphostgroup_name'])
+      self.config['iphostgroup_name'])
     return 0
 
   # Function called when banning an IP.
@@ -105,8 +145,8 @@ class f2bsophosxg(f2b):
     print("Ban: Banning single IP", ip)
 
     # Add new IpHost as part of the IpHostGroup
-    ipHostName = self.sxg.config['iphost_prefix'] + ip
-    xmldata = self.sxg.xml_addIpHost(ipHostName,ip,self.sxg.config['iphostgroup_name'])
+    ipHostName = self.config['iphost_prefix'] + ip
+    xmldata = self.sxg.xml_addIpHost(ipHostName,ip,self.config['iphostgroup_name'])
     response = self.sxg.apiCall(xmldata)
     if not self.sxg.isApiCallSuccessful(response): return 1
     print("Ban: Successfully banned single IP", ip)
@@ -117,7 +157,7 @@ class f2bsophosxg(f2b):
     if not self.__isValidIp(ip): return 1
     print("Unban: Unbanning single IP", ip)
 
-    ipHostName = self.sxg.config['iphost_prefix'] + ip
+    ipHostName = self.config['iphost_prefix'] + ip
 
     # Get all elements of IP host
     xmldata = self.sxg.xml_getIpHost()

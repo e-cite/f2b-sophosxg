@@ -1,5 +1,4 @@
 import requests
-import json
 import re
 from os import sys
 import xml.etree.ElementTree as ET
@@ -7,25 +6,21 @@ import xml.etree.ElementTree as ET
 class sophosxg:
   # Constructor method
   # Read and parse config file
-  def __init__(self,file):
-    self.configfile = file
+  def __init__(self,config):
     try:
-      self.config = self.readConfig(self.configfile)
-    except FileNotFoundError:
-      print("Configuration file",self.configfile,"not found.")
+      self.config = {
+        'url': config['url'],
+        'verifySslCertificate': config['verifySslCertificate'],
+        'user': config['user'],
+        'pass': config['pass']
+      }
+    except KeyError:
+      print("Configuration dict not valid or keys not as required.")
       sys.exit(1)
 
     if not self.isConfigValid(self.config):
       config = None
       sys.exit(1)
-
-  # Open and read the config file
-  # Arguments: Filename
-  # Returns: config-dict
-  def readConfig(self,file):
-    with open(file, 'r') as f:
-      config = json.load(f)
-    return config
 
   # Checks given config for all parameters to be correct
   # Arguments: config json dict
@@ -40,24 +35,10 @@ class sophosxg:
       print("Config: Parameter verifySslCertificate is not a boolean value.")
       return False
 
-    for param in ['user', 'pass', 'iphost_prefix', 'iphostgroup_name']:
+    for param in ['user', 'pass']:
       if not isinstance(config[param], str):
         print("Config: Parameter", param, "is not a string.")
         return False
-
-    for param in ['iphost_prefix', 'iphostgroup_name']:
-      if re.search(',', config[param]):
-        print("Config: Parameter", param, "contains not allowed character ','.")
-        return False
-
-    if re.search('^#', config['iphost_prefix']):
-      print("Config: Parameter iphost_prefix is not allowed to start with character '#'.")
-      return False
-
-    maxLengthOfIpv4Address = 15 # Max. length of IPv4 address
-    maxLengthAllowed = 60 # Max. allowed characters for IP host name (Sophos API doc)
-    if (len(config['iphost_prefix']) + maxLengthOfIpv4Address) >= maxLengthAllowed:
-      return False
 
     return True
 

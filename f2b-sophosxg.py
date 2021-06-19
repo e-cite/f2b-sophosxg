@@ -1,4 +1,3 @@
-from os import read
 import json
 import sys
 import argparse

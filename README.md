@@ -173,3 +173,10 @@ To reach that, some characteristics of the Sophos XG API have to be considered:
 - The exsistence of the IP host group is necessary to add an IP host to it
 - No IP host group will be deleted by the library, since it may be used in
   firewall rules
+
+## Further documentation
+The official documentation of the Sophos XG API can be found here:
+- Sophos Firewall help: "How to use the API"\
+  https://docs.sophos.com/nsg/sophos-firewall/18.0/Help/en-us/webhelp/onlinehelp/nsg/sfos/learningContent/APIUsingAPI.html
+- Sophos API Help:\
+  https://docs.sophos.com/nsg/sophos-firewall/18.0/API/index.html

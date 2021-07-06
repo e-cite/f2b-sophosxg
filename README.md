@@ -86,6 +86,7 @@ Configuration is done in three steps:
     - "User type": "Administrator" (Don't worry, thus we set the Profile!)
     - "Profile": "`f2b-api-access`"
     - Set "Password" `password`
+    - Set "Group" `Open Group`
 
 ### `f2b-sophosxg.py` Configuration
 Set credentials for the Sophos XG API in

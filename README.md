@@ -190,6 +190,25 @@ To reach that, some characteristics of the Sophos XG API have to be considered:
 - No IP host group will be deleted by the library, since it may be used in
   firewall rules
 
+### Debugging
+For debugging purposes, the API calls can be done by `curl` manually as
+follows:
+```bash
+$ curl -v --insecure -k "https://192.168.1.1:4444/webconsole/APIController?\
+reqxml=\
+<Request>\
+<Login>\
+<Username>apiuser</Username>\
+<Password>password</Password>\
+</Login>\
+<Get>\
+<IPHost/>\
+</Get>\
+</Request>"
+```
+Modify the XML request on your needs as given by the official Sophos XG API
+documentation.
+
 ## Further documentation
 The official documentation of the Sophos XG API can be found here:
 - Sophos Firewall help: "How to use the API"\

@@ -43,7 +43,7 @@ args = parser.parse_args()
 if args.configfile:
   configfile = args.configfile
 else:
-  configfile = '/usr/local/etc/f2b-sophosxg/config.json'
+  configfile = '/usr/local/etc/f2bsophosxg/config.json'
 
 config = readConfig(configfile)
 

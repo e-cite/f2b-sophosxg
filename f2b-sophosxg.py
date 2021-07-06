@@ -1,6 +1,7 @@
 import json
 import sys
 import argparse
+sys.path.append("/usr/local/lib")
 import f2bsophosxg.libf2bsophosxg
 
 # Open and read the config file

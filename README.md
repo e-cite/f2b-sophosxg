@@ -124,6 +124,21 @@ from one Fail2ban host will affect the blockings of the other hosts!
   banaction = sophosxg
   ```
 
+## Testing
+The correct functionality can be tested by manually banning or unbanning
+IP addresses with the fail2ban-client:
+```bash
+# Get currently banned IPs of given jail sshd
+# (Data comes from fail2ban, not from Sophos XG!)
+$ sudo fail2ban-client status sshd
+# Ban IP 192.168.13.37
+$ sudo fail2ban-client set sshd banip 192.168.13.37
+# Unban IP 192.168.13.37
+$ sudo fail2ban-client set sshd unbanip 192.168.13.37
+```
+Exceute these commands manually on every host and check the corresponding
+IP host group in the Sophos XG WebUI.
+
 ## Details
 ### Overview
 Fail2ban generally uses these commands (called "actions") to handle the
